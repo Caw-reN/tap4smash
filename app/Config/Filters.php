@@ -12,6 +12,7 @@ use CodeIgniter\Filters\InvalidChars;
 use CodeIgniter\Filters\PageCache;
 use CodeIgniter\Filters\PerformanceMetrics;
 use CodeIgniter\Filters\SecureHeaders;
+use App\Filters\AdminFilter;
 
 class Filters extends BaseFilters
 {
@@ -34,6 +35,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        // Tap4Smash custom filters
+        'admin'         => AdminFilter::class,
     ];
 
     /**
@@ -72,8 +75,8 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
+            // CSRF dikecualikan untuk webhook PaymentKu — dikelola via $filters di bawah
             // 'honeypot',
-            // 'csrf',
             // 'invalidchars',
         ],
         'after' => [
@@ -106,5 +109,21 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        // CSRF aktif untuk semua POST kecuali webhook PaymentKu (S-02 + S-01)
+        'csrf' => [
+            'before' => ['*'],
+            'except' => ['payment/callback'],
+        ],
+        // Proteksi semua route /admin/* kecuali halaman login
+        'admin' => [
+            'before' => [
+                'admin/*',
+                'admin',
+            ],
+            'except' => [
+                'admin/login',
+            ],
+        ],
+    ];
 }

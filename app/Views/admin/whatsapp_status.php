@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -38,6 +39,8 @@
             max-width: 480px;
             background: var(--slate-dark);
             border: 1px solid var(--slate);
+            border-radius: 6px;
+            overflow: hidden;
         }
 
         .card-header {
@@ -52,6 +55,7 @@
         .card-header .icon {
             font-size: 2rem;
             line-height: 1;
+            color: var(--volt);
         }
 
         .card-header h1 {
@@ -86,6 +90,7 @@
             border: 1px solid var(--slate);
             background: var(--charcoal);
             margin-bottom: 1.75rem;
+            border-radius: 6px;
         }
 
         .status-dot {
@@ -117,6 +122,7 @@
             text-transform: uppercase;
             letter-spacing: 0.1em;
             padding: 0.2rem 0.6rem;
+            border-radius: 4px;
         }
 
         .badge-connected { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
@@ -135,6 +141,7 @@
             font-size: 0.85rem;
             color: var(--volt);
             font-weight: 600;
+            border-radius: 6px;
         }
 
         /* ── QR Section ───────────────────────────────────────── */
@@ -162,6 +169,8 @@
             padding: 0;
             position: relative;
             margin-bottom: 1.25rem;
+            border-radius: 6px;
+            overflow: hidden;
         }
 
         .qr-box img {
@@ -229,6 +238,7 @@
         .connected-state .check-icon {
             font-size: 3.5rem;
             animation: pop-in .4s ease;
+            color: var(--green);
         }
 
         @keyframes pop-in { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
@@ -258,7 +268,7 @@
             text-align: center;
         }
 
-        .offline-state .error-icon { font-size: 2.5rem; }
+        .offline-state .error-icon { font-size: 2.5rem; color: var(--red); }
 
         .offline-state p {
             font-size: 0.8rem;
@@ -276,6 +286,7 @@
             color: var(--volt);
             font-family: 'Courier New', monospace;
             margin-top: 0.5rem;
+            border-radius: 4px;
         }
 
         /* ── Footer ───────────────────────────────────────────── */
@@ -299,6 +310,7 @@
             padding: 0.45rem 0.9rem;
             cursor: pointer;
             transition: all 0.15s;
+            border-radius: 6px;
         }
 
         .btn-refresh:hover {
@@ -322,7 +334,7 @@
 
     <!-- Header -->
     <div class="card-header">
-        <div class="icon">🏸</div>
+        <div class="icon"><i class="fa-brands fa-whatsapp"></i></div>
         <h1>
             <span>Tap4Smash Admin</span>
             WhatsApp Gateway
@@ -341,7 +353,7 @@
 
         <!-- Phone Info (visible when connected) -->
         <div class="phone-info" id="phoneInfo">
-            <span>📱</span>
+            <span><i class="fa-solid fa-mobile-screen"></i></span>
             <span id="phoneNumber">—</span>
         </div>
 
@@ -358,7 +370,7 @@
             </div>
 
             <div class="qr-timer" id="qrTimer" style="display:none">
-                ⏱ QR refresh dalam <span id="countdown">30</span> detik
+                <i class="fa-regular fa-clock"></i> QR refresh dalam <span id="countdown">30</span> detik
             </div>
 
             <p class="qr-hint">
@@ -369,14 +381,14 @@
 
         <!-- Connected State -->
         <div class="connected-state" id="connectedState">
-            <div class="check-icon">✅</div>
+            <div class="check-icon"><i class="fa-solid fa-circle-check"></i></div>
             <h2>Terhubung!</h2>
             <p>WhatsApp Gateway aktif dan siap<br>mengirim notifikasi booking.</p>
         </div>
 
         <!-- Offline / Service Error State -->
         <div class="offline-state" id="offlineState">
-            <div class="error-icon">🔌</div>
+            <div class="error-icon"><i class="fa-solid fa-plug-circle-xmark"></i></div>
             <p>WA Service tidak dapat dijangkau.<br>Pastikan Node.js service sudah berjalan:</p>
             <code>node wa-service/index.js</code>
         </div>
@@ -386,7 +398,7 @@
     <!-- Footer -->
     <div class="card-footer">
         <button class="btn-refresh" id="btnRefresh" onclick="fetchStatus()">
-            ↻ Refresh Manual
+            <i class="fa-solid fa-rotate-right"></i> Refresh Manual
         </button>
         <div class="auto-refresh-info">
             Auto-refresh: <span id="nextRefresh">3s</span>
