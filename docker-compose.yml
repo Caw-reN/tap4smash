@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # Database MySQL
+  db:
+    image: mysql:8.0
+    container_name: tap4smash_db
+    restart: always
+    environment:
+      MYSQL_DATABASE: tap4smash
+      MYSQL_USER: tap4smash_user
+      MYSQL_PASSWORD: tap4smash_password
+      MYSQL_ROOT_PASSWORD: tap4smash_root_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  # Backend PHP / Web Server (CodeIgniter 4)
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: tap4smash_web
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      # Opsional: Mapping folder log agar mudah dicek tanpa masuk kontainer
+      - ./writable/logs:/var/www/html/writable/logs
+
+  # WA Microservice (Node.js)
+  wa-service:
+    build:
+      context: ./wa-service
+      dockerfile: Dockerfile
+    container_name: tap4smash_wa
+    restart: always
+    environment:
+      - WA_SERVICE_PORT=3001
+      - WA_SERVICE_API_KEY=tap4smash_wa_secret_2025
+    ports:
+      - "3001:3001"
+    volumes:
+      # Mapping folder auth_info agar sesi WA tidak hilang ketika kontainer di-restart
+      - ./wa-service/auth_info:/app/auth_info
+
+volumes:
+  db_data:
