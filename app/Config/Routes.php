@@ -22,6 +22,9 @@ $routes->post('payment/callback', 'PaymentController::callback');
 // ── Payment: QR Payment Page ──────────────────────────────────────────────────
 $routes->get('booking/bayar/(:segment)', 'Home::payment/$1');
 
+// ── User: E-Tiket (QR Check-in) ───────────────────────────────────────────────
+$routes->get('tiket/(:segment)', 'Home::tiket/$1');
+
 
 // ── Admin: Auth (tidak dilindungi filter) ────────────────────────────────────
 $routes->get( 'admin/login',  'Admin\AuthController::login');
@@ -39,6 +42,12 @@ $routes->group('admin', function ($routes) {
     $routes->get('bookings',   'Admin\BookingController::index');
     $routes->get('pelunasan',  'Admin\BookingController::pelunasan');
     $routes->post('pelunasan/lunasi/(:num)', 'Admin\BookingController::lunasi/$1');
+
+    // Check-in QR Scanner
+    $routes->get( 'checkin',           'Admin\BookingController::checkin');
+    $routes->post('checkin/scan',      'Admin\BookingController::scanResult');
+    $routes->post('checkin/proses',    'Admin\BookingController::doCheckin');
+    $routes->post('checkin/qris-status', 'Admin\BookingController::qrisCheckinStatus');
 
     // Master Lapangan (CRUD)
     $routes->get( 'lapangan',              'Admin\LapanganController::index');

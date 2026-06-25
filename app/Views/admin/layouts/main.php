@@ -40,6 +40,11 @@
                 <?php endif; ?>
             </a>
 
+            <a href="<?= site_url('admin/checkin') ?>"
+               class="nav-item <?= str_starts_with(uri_string(), 'admin/checkin') ? 'active' : '' ?>">
+                <i class="fa-solid fa-qrcode nav-icon"></i> Check-in Scanner
+            </a>
+
             <div class="nav-section-title">Manajemen</div>
 
             <a href="<?= site_url('admin/lapangan') ?>"

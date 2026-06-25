@@ -67,13 +67,13 @@ if (! function_exists('whatsapp_send_message')) {
 
         try {
             $client   = \Config\Services::curlrequest();
-            $response = $client->post($serviceUrl . '/send', [
+            $response = $client->post($serviceUrl . '/send-message', [
                 'headers' => [
                     'X-Api-Key'    => $apiKey,
                     'Content-Type' => 'application/json',
                 ],
                 'json'    => [
-                    'to'      => $to,
+                    'phone'   => $to,
                     'message' => $message,
                 ],
                 'timeout' => 8,
@@ -134,8 +134,9 @@ if (! function_exists('whatsapp_send_ticket')) {
         }
 
         $message .= str_repeat('─', 30) . "\n";
-        $message .= "📌 Simpan kode ini untuk cek status:\n";
-        $message .= site_url('cek-status?kode=' . $code) . "\n\n";
+        $message .= "📌 *E-TIKET & QR CHECK-IN:*\n";
+        $message .= site_url('tiket/' . $code) . "\n";
+        $message .= "_(Tunjukkan halaman ini ke petugas GOR saat masuk)_\n\n";
         $message .= "_Terima kasih sudah booking di Tap4Smash!_ 🏸";
 
         return whatsapp_send_message($booking['nomor_wa'], $message);

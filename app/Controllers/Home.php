@@ -430,4 +430,38 @@ class Home extends BaseController
             'lapangan' => $lapangan,
         ]);
     }
+
+    /**
+     * Halaman E-Tiket publik dengan QR Code.
+     * URL: /tiket/{booking_code}
+     *
+     * QR Code di-generate di browser (tidak butuh library PHP),
+     * berisi URL ke halaman ini sendiri sehingga admin bisa scan
+     * untuk identifikasi user di pintu GOR.
+     */
+    public function tiket(string $bookingCode): string
+    {
+        $booking = $this->bookingModel
+            ->where('booking_code', strtoupper(trim($bookingCode)))
+            ->first();
+
+        if (! $booking) {
+            return redirect()->to(site_url('/'))->with('error', 'Kode booking tidak ditemukan.');
+        }
+
+        // Tiket hanya berlaku untuk booking yang sudah success
+        if ($booking['status'] !== 'success') {
+            return redirect()->to(site_url('booking/konfirmasi/' . strtoupper(trim($bookingCode))));
+        }
+
+        $lapangan = $this->lapanganModel->find($booking['lapangan_id']);
+        helper('format');
+
+        return view('user/tiket', [
+            'booking'      => $booking,
+            'lapangan'     => $lapangan,
+            'jam_main_fmt' => format_jam_main($booking['jam_main']),
+            'tiket_url'    => site_url('tiket/' . $booking['booking_code']),
+        ]);
+    }
 }

@@ -14,6 +14,7 @@ class BookingModel extends Model
         'tanggal_main', 'jam_main',
         'total_harga', 'skema_pembayaran', 'jumlah_dibayar', 'sisa_tagihan',
         'status', 'status_pelunasan', 'payment_token', 'expires_at',
+        'is_checked_in', 'checkin_at', 'checkin_method',
     ];
 
     // ─── Cleanup ───────────────────────────────────────────────────────────────
@@ -82,6 +83,29 @@ class BookingModel extends Model
             'sisa_tagihan'     => 0,
             'status_pelunasan' => 'lunas',
         ]);
+    }
+
+    /**
+     * Tandai booking sebagai checked-in (masuk GOR).
+     * Jika ada pelunasan, catat metodenya (cash/qris).
+     *
+     * @param int         $id     ID booking
+     * @param string|null $method 'cash'|'qris'|null (null jika sudah lunas sebelum checkin)
+     */
+    public function markAsCheckedIn(int $id, ?string $method = null): bool
+    {
+        $data = [
+            'is_checked_in' => 1,
+            'checkin_at'    => date('Y-m-d H:i:s'),
+        ];
+
+        if ($method !== null) {
+            $data['checkin_method']   = $method;
+            $data['sisa_tagihan']     = 0;
+            $data['status_pelunasan'] = 'lunas';
+        }
+
+        return (bool) $this->update($id, $data);
     }
 
     // ─── Dashboard Stats ──────────────────────────────────────────────────────
