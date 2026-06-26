@@ -12,6 +12,7 @@ const {
 const { Boom }  = require('@hapi/boom')
 const pino      = require('pino')
 const http      = require('http')
+const fs        = require('fs')
 const qrcode    = require('qrcode-terminal')
 const QRCode    = require('qrcode')          // generate QR sebagai gambar PNG
 
@@ -71,8 +72,15 @@ async function connectToWhatsApp() {
 
             if (statusCode === DisconnectReason.loggedOut) {
                 currentQRString = null
-                console.log('[WA] ❌ Logged out! Hapus folder auth_info/ lalu jalankan ulang.')
-                process.exit(1)
+                console.log('[WA] ❌ Logged out! Menghapus folder auth_info/ dan merestart...')
+                try { fs.rmSync('./auth_info', { recursive: true, force: true }) } catch(e){}
+                
+                // Pancing node --watch untuk merestart process dengan mengupdate timestamp file ini
+                console.log('[WA] Merestart service...')
+                setTimeout(() => {
+                    const now = new Date()
+                    fs.utimesSync(__filename, now, now)
+                }, 1000)
             }
 
             // Reconnect otomatis untuk alasan selain logged out
@@ -213,6 +221,21 @@ const server = http.createServer((req, res) => {
             }
         })
 
+        return
+    }
+
+    // ── POST /logout ───────────────────────────────────────────────────────────
+    if (req.method === 'POST' && req.url === '/logout') {
+        if (isConnected && waSocket) {
+            waSocket.logout()
+        } else {
+            // Jika tidak connect, paksa hapus folder dan restart
+            try { fs.rmSync('./auth_info', { recursive: true, force: true }) } catch(e){}
+            const now = new Date()
+            fs.utimesSync(__filename, now, now)
+        }
+        res.writeHead(200)
+        res.end(JSON.stringify({ success: true, message: 'Berhasil logout.' }))
         return
     }
 

@@ -12,12 +12,12 @@
     --volt:        #CCFF00;
     --volt-dim:    rgba(204,255,0,.08);
     --volt-border: rgba(204,255,0,.25);
-    --charcoal:    #111827;
-    --slate-dark:  #1F2937;
-    --slate:       #374151;
+    --charcoal:    #0D1117;
+    --slate-dark:  #161B22;
+    --slate:       #30363D;
     --slate-light: #4B5563;
-    --text:        #F9FAFB;
-    --text-muted:  #9CA3AF;
+    --text:        #E6EDF3;
+    --text-muted:  #8B949E;
     --green:       #22C55E;
     --green-dim:   rgba(34,197,94,.12);
     --red:         #EF4444;
@@ -241,63 +241,38 @@ a { color: inherit; text-decoration: none; }
 
 /* Base flex layout for all styles */
 .stat-card {
-    background: linear-gradient(145deg, var(--slate-dark) 0%, var(--charcoal) 100%);
+    background: var(--slate-dark);
     border: 1px solid var(--slate);
-    padding: 2rem 1.5rem 1.75rem;
-    min-height: 160px;
+    padding: 1.75rem 1.5rem;
+    min-height: 140px;
     position: relative;
     overflow: hidden;
     border-radius: var(--radius);
     display: flex;
     flex-direction: column-reverse;
     justify-content: flex-end;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 1;
+    transition: all 0.2s ease;
 }
 
 .stat-card:hover { 
-    transform: translateY(-5px);
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255,255,255,0.1);
+    transform: translateY(-3px);
+    border-color: var(--volt-border);
 }
 
-/* Glowing top border */
+/* Subtle top border accent */
 .stat-card::before {
     content: '';
     position: absolute;
     top: 0; left: 0; right: 0;
-    height: 3px;
-    z-index: 3;
+    height: 2px;
     transition: all 0.3s ease;
 }
 
-.stat-card.volt::before   { background: var(--volt);   box-shadow: 0 0 12px var(--volt); }
-.stat-card.green::before  { background: var(--green);  box-shadow: 0 0 12px var(--green); }
-.stat-card.yellow::before { background: var(--yellow); box-shadow: 0 0 12px var(--yellow); }
-.stat-card.blue::before   { background: var(--blue);   box-shadow: 0 0 12px var(--blue); }
-.stat-card.red::before    { background: var(--red);    box-shadow: 0 0 12px var(--red); }
-
-/* Faint gradient glow inside the card */
-.stat-card::after {
-    content: '';
-    position: absolute;
-    top: -50%; right: -20%;
-    width: 150px; height: 150px;
-    border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.05;
-    z-index: -1;
-    transition: opacity 0.3s ease;
-}
-
-.stat-card.volt::after   { background: var(--volt); }
-.stat-card.green::after  { background: var(--green); }
-.stat-card.yellow::after { background: var(--yellow); }
-.stat-card.blue::after   { background: var(--blue); }
-.stat-card.red::after    { background: var(--red); }
-
-.stat-card:hover::after { opacity: 0.15; }
+.stat-card.volt::before   { background: var(--volt); }
+.stat-card.green::before  { background: var(--green); }
+.stat-card.yellow::before { background: var(--yellow); }
+.stat-card.blue::before   { background: var(--blue); }
+.stat-card.red::before    { background: var(--red); }
 
 /* Large faded background icon */
 .stat-icon { 
@@ -308,12 +283,12 @@ a { color: inherit; text-decoration: none; }
     opacity: 0.04;
     z-index: 0;
     transform: rotate(-15deg);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.4s ease;
 }
 
 .stat-card:hover .stat-icon {
     transform: scale(1.1) rotate(0deg);
-    opacity: 0.12;
+    opacity: 0.1;
 }
 
 .stat-card.volt:hover .stat-icon { color: var(--volt); }
@@ -331,7 +306,6 @@ a { color: inherit; text-decoration: none; }
     line-height: 1;
     margin-top: 0.5rem;
     z-index: 2;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .stat-label {

@@ -6,6 +6,11 @@ use App\Controllers\BaseController;
 use App\Models\BookingModel;
 use App\Models\LapanganModel;
 use App\Libraries\PaymentKu;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Color\Color;
 
 class Home extends BaseController
 {
@@ -442,7 +447,7 @@ class Home extends BaseController
      * Halaman E-Tiket publik dengan QR Code.
      * URL: /tiket/{booking_code}
      *
-     * QR Code di-generate di browser (tidak butuh library PHP),
+     * QR Code di-generate di server (endroid/qr-code),
      * berisi URL ke halaman ini sendiri sehingga admin bisa scan
      * untuk identifikasi user di pintu GOR.
      */
@@ -461,14 +466,35 @@ class Home extends BaseController
             return redirect()->to(site_url('booking/konfirmasi/' . strtoupper(trim($bookingCode))));
         }
 
-        $lapangan = $this->lapanganModel->find($booking['lapangan_id']);
+        $lapangan  = $this->lapanganModel->find($booking['lapangan_id']);
+        $tiketUrl  = site_url('tiket/' . $booking['booking_code']);
         helper('format');
+
+        // Generate QR Code server-side sebagai Base64 PNG
+        $qrDataUri = null;
+        try {
+            $builder = new Builder(
+                writer: new PngWriter(),
+                data: $tiketUrl,
+                encoding: new Encoding('UTF-8'),
+                errorCorrectionLevel: ErrorCorrectionLevel::High,
+                size: 220,
+                margin: 8,
+                foregroundColor: new Color(17, 24, 39),
+                backgroundColor: new Color(255, 255, 255),
+            );
+
+            $qrDataUri = $builder->build()->getDataUri();
+        } catch (\Exception $e) {
+            log_message('error', '[Home::tiket] Gagal generate QR: {e}', ['e' => $e->getMessage()]);
+        }
 
         return view('user/tiket', [
             'booking'      => $booking,
             'lapangan'     => $lapangan,
             'jam_main_fmt' => format_jam_main($booking['jam_main']),
-            'tiket_url'    => site_url('tiket/' . $booking['booking_code']),
+            'tiket_url'    => $tiketUrl,
+            'qr_data_uri'  => $qrDataUri,
         ]);
     }
 }

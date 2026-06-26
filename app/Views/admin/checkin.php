@@ -737,8 +737,9 @@ async function apiFetch(url, body) {
     return fetch(url, {
         method:  'POST',
         headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': CSRF_HASH,
+            'Content-Type':    'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN':    CSRF_HASH,
         },
         body: JSON.stringify(body),
     });

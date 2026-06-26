@@ -62,6 +62,7 @@ $routes->group('admin', function ($routes) {
     $routes->get('whatsapp',        'Admin\WhatsAppController::index');
     $routes->get('whatsapp/status', 'Admin\WhatsAppController::status');
     $routes->get('whatsapp/qr',     'Admin\WhatsAppController::qr');
+    $routes->post('whatsapp/logout', 'Admin\WhatsAppController::logout');
 
     // Settings
     $routes->get('settings',        'Admin\SettingController::index');

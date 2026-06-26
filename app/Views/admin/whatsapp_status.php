@@ -1,40 +1,17 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Status WhatsApp — Admin Tap4Smash</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<?= $this->extend('admin/layouts/main') ?>
+<?= $this->section('content') ?>
 
-        :root {
-            --volt:       #CCFF00;
-            --charcoal:   #111827;
-            --slate-dark: #1F2937;
-            --slate:      #374151;
-            --text-muted: #9CA3AF;
-            --green:      #22C55E;
-            --red:        #EF4444;
-            --yellow:     #F59E0B;
-        }
-
-        body {
-            background: var(--charcoal);
-            color: #F9FAFB;
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+<style>
+        .wa-status-wrapper {
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2rem;
+            min-height: calc(100vh - 150px);
         }
 
         /* ── Card Utama ───────────────────────────────────────── */
-        .card {
+        .wa-card {
             width: 100%;
             max-width: 480px;
             background: var(--slate-dark);
@@ -327,10 +304,10 @@
             color: var(--text-muted);
         }
     </style>
-</head>
-<body>
+</style>
 
-<div class="card">
+<div class="wa-status-wrapper">
+<div class="wa-card">
 
     <!-- Header -->
     <div class="card-header">
@@ -384,6 +361,13 @@
             <div class="check-icon"><i class="fa-solid fa-circle-check"></i></div>
             <h2>Terhubung!</h2>
             <p>WhatsApp Gateway aktif dan siap<br>mengirim notifikasi booking.</p>
+
+            <form action="<?= site_url('admin/whatsapp/logout') ?>" method="post" style="margin-top: 1.5rem;">
+                <?= csrf_field() ?>
+                <button type="submit" class="btn btn-red" onclick="return confirm('Yakin ingin logout dan hapus sesi WA saat ini? Anda harus melakukan scan QR ulang setelahnya.')">
+                    <i class="fa-solid fa-power-off"></i> Logout & Scan Ulang
+                </button>
+            </form>
         </div>
 
         <!-- Offline / Service Error State -->
@@ -561,5 +545,6 @@
     fetchStatus()
 </script>
 
-</body>
-</html>
+</div><!-- /wa-status-wrapper -->
+
+<?= $this->endSection() ?>

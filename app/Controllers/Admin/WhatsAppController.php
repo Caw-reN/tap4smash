@@ -63,6 +63,25 @@ class WhatsAppController extends BaseController
         return $this->response->setJSON($data);
     }
 
+    /**
+     * Proxy POST /logout ke wa-service untuk menghapus sesi dan merestart bot.
+     */
+    public function logout()
+    {
+        $client = Services::curlrequest();
+        try {
+            $client->post($this->serviceUrl . '/logout', [
+                'headers' => ['X-Api-Key' => $this->apiKey],
+                'timeout' => 5,
+            ]);
+        } catch (\Exception $e) {
+            // Abaikan jika timeout/service mati (akan dihandle wa-service jika direstart manual)
+            log_message('error', '[Admin\WhatsAppController] Gagal logout: {error}', ['error' => $e->getMessage()]);
+        }
+
+        return redirect()->to(site_url('admin/whatsapp'))->with('success', 'WhatsApp berhasil di-logout dan di-reset. Silakan scan ulang.');
+    }
+
     // ─────────────────────────────────────────────────────────────────────────
     // Private Helper
     // ─────────────────────────────────────────────────────────────────────────

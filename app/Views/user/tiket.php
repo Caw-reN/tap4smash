@@ -10,8 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= base_url('css/user.css') ?>">
-    <!-- QR Code generator (client-side, no PHP lib needed) -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <!-- QR Code server-generated, tidak perlu library JS -->
     <style>
         :root {
             --volt: #d4f500;
@@ -359,7 +358,14 @@
         <div class="tiket-bottom">
             <div class="qr-label"><i class="fa-solid fa-qrcode"></i> &nbsp; Scan untuk Check-in</div>
             <div class="qr-container">
-                <canvas id="qr-canvas"></canvas>
+                <?php if ($qr_data_uri): ?>
+                    <img src="<?= $qr_data_uri ?>" alt="QR Check-in <?= esc($booking['booking_code']) ?>" style="width:220px;height:220px;display:block;">
+                <?php else: ?>
+                    <div style="width:220px;height:220px;display:flex;align-items:center;justify-content:center;color:#888;font-size:.75rem;text-align:center;padding:1rem;">
+                        <i class="fa-solid fa-triangle-exclamation" style="display:block;font-size:2rem;margin-bottom:.5rem;"></i>
+                        Gagal memuat QR.<br>Tunjukkan kode booking ke petugas.
+                    </div>
+                <?php endif; ?>
             </div>
             <div class="qr-hint">
                 Tunjukkan QR ini ke <strong>petugas GOR</strong><br>untuk konfirmasi kehadiran kamu.
@@ -376,9 +382,6 @@
         <a href="<?= site_url('/') ?>" class="btn-ghost">
             <i class="fa-solid fa-house"></i> Beranda
         </a>
-        <button onclick="window.print()" class="btn-ghost">
-            <i class="fa-solid fa-print"></i> Print Tiket
-        </button>
     </div>
 
 </div>
@@ -388,18 +391,7 @@
     <strong style="color:var(--volt);">Tap4Smash</strong> GOR Sport Center &copy; <?= date('Y') ?>
 </footer>
 
-<script>
-    // Generate QR Code dari URL tiket ini sendiri
-    const tiketUrl = <?= json_encode($tiket_url) ?>;
 
-    QRCode.toCanvas(document.getElementById('qr-canvas'), tiketUrl, {
-        width: 220,
-        margin: 0,
-        color: { dark: '#111827', light: '#ffffff' },
-    }, function(err) {
-        if (err) console.error('QR Error:', err);
-    });
-</script>
 
 </body>
 </html>
