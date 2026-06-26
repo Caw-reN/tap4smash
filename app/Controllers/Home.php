@@ -260,7 +260,7 @@ class Home extends BaseController
     /**
      * Halaman pembayaran QR (redirect setelah form booking berhasil)
      */
-    public function payment(string $bookingCode): string
+    public function payment(string $bookingCode): string|\CodeIgniter\HTTP\ResponseInterface
     {
         $booking = $this->bookingModel
             ->where('booking_code', strtoupper(trim($bookingCode)))
@@ -279,6 +279,13 @@ class Home extends BaseController
         if (in_array($booking['status'], ['expired', 'failed'])) {
             return redirect()->to(site_url('booking'))
                 ->with('errors', ['jam_mulai' => 'Waktu pembayaran habis. Silakan booking ulang.']);
+        }
+
+        // Jika masih pending tapi expires_at sudah terlewat → tandai expired
+        if ($booking['status'] === 'pending' && strtotime($booking['expires_at']) < time()) {
+            $this->bookingModel->update($booking['id'], ['status' => 'expired']);
+            return redirect()->to(site_url('booking'))
+                ->with('errors', ['jam_mulai' => 'Waktu pembayaran habis (15 menit). Silakan booking ulang.']);
         }
 
         $lapangan  = $this->lapanganModel->find($booking['lapangan_id']);
@@ -388,7 +395,7 @@ class Home extends BaseController
     }
 
     /** Halaman konfirmasi pembayaran (F-10) */
-    public function konfirmasi(string $bookingCode): string
+    public function konfirmasi(string $bookingCode): string|\CodeIgniter\HTTP\ResponseInterface
     {
         $booking = $this->bookingModel
             ->where('booking_code', strtoupper(trim($bookingCode)))
@@ -439,7 +446,7 @@ class Home extends BaseController
      * berisi URL ke halaman ini sendiri sehingga admin bisa scan
      * untuk identifikasi user di pintu GOR.
      */
-    public function tiket(string $bookingCode): string
+    public function tiket(string $bookingCode): string|\CodeIgniter\HTTP\ResponseInterface
     {
         $booking = $this->bookingModel
             ->where('booking_code', strtoupper(trim($bookingCode)))
