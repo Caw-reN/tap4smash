@@ -162,10 +162,12 @@ class Home extends BaseController
         }
 
         // F-04: Hitung skema pembayaran
-        $totalHarga    = $lapangan['harga_per_jam'] * $durasiJam;
-        $jumlahDibayar = ($skema === 'dp') ? $totalHarga * 0.5 : $totalHarga;
-        $sisaTagihan   = $totalHarga - $jumlahDibayar;
-        $statusPelunasan = ($skema === 'full') ? 'lunas' : 'belum_lunas';
+        $totalHarga = $lapangan['harga_per_jam'] * $durasiJam;
+        $payment    = $this->bookingModel->calculatePayment([
+            'total_harga'      => $totalHarga,
+            'skema_pembayaran' => $skema,
+        ]);
+        $jumlahDibayar = $payment['jumlah_dibayar'];
 
         // Cleanup expired sebelum cek konflik
         $this->bookingModel->cleanupExpiredSlots();
@@ -377,16 +379,14 @@ class Home extends BaseController
         // Jika PaymentKu konfirmasi success, update DB & kirim WA
         if ($result['status'] === 'success' && $booking['status'] !== 'success') {
             helper('whatsapp');
-            $skema         = $booking['skema_pembayaran'];
-            $totalHarga    = (float) $booking['total_harga'];
-            $jumlahDibayar = ($skema === 'dp') ? $totalHarga * 0.5 : $totalHarga;
-            $sisaTagihan   = $totalHarga - $jumlahDibayar;
+
+            $payment = $this->bookingModel->calculatePayment($booking);
 
             $this->bookingModel->update($booking['id'], [
                 'status'           => 'success',
-                'jumlah_dibayar'   => $jumlahDibayar,
-                'sisa_tagihan'     => $sisaTagihan,
-                'status_pelunasan' => ($skema === 'full') ? 'lunas' : 'belum_lunas',
+                'jumlah_dibayar'   => $payment['jumlah_dibayar'],
+                'sisa_tagihan'     => $payment['sisa_tagihan'],
+                'status_pelunasan' => $payment['status_pelunasan'],
             ]);
 
             $updatedBooking = $this->bookingModel->find($booking['id']);

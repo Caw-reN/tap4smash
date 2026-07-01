@@ -352,58 +352,81 @@ table.admin-table {
 }
 
 .admin-table th {
-    background: var(--charcoal);
-    padding: 0.65rem 1rem;
+    background: #0b0f14;
+    padding: 0.7rem 1.1rem;
     text-align: left;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.14em;
     color: var(--text-muted);
     white-space: nowrap;
-    border-bottom: 1px solid var(--slate);
+    border-bottom: 2px solid var(--slate);
 }
 
 .admin-table td {
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--slate);
-    font-size: 0.82rem;
+    padding: 0.85rem 1.1rem;
+    border-bottom: 1px solid rgba(48,54,61,.6);
+    font-size: 0.83rem;
     vertical-align: middle;
+    line-height: 1.4;
+}
+
+/* Kolom jam: bungkus agar tidak bikin tabel terlalu lebar */
+.admin-table td.col-jam {
+    max-width: 160px;
+    white-space: normal;
+    word-break: break-word;
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+/* Kolom angka: rata kanan agar lebih mudah dibandingkan */
+.admin-table td.col-number {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
 }
 
 .admin-table tr:last-child td { border-bottom: none; }
 
-.admin-table tr:hover td { background: rgba(255,255,255,.02); }
+.admin-table tr:hover td {
+    background: rgba(255,255,255,.03);
+}
 
 .admin-table .empty-row td {
     text-align: center;
     color: var(--text-muted);
-    padding: 2rem;
+    padding: 3rem 2rem;
     font-size: 0.8rem;
 }
 
 /* ── Badges / Status Pills ─────────────────────────────────────── */
 .badge {
-    display: inline-block;
-    padding: 0.2rem 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.6rem;
     font-size: 0.62rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    border: 1px solid;
+    letter-spacing: 0.07em;
     border-radius: var(--radius-sm);
+    white-space: nowrap;
+    line-height: 1.2;
 }
 
-.badge-success  { background: var(--green-dim);  color: var(--green);  border-color: rgba(34,197,94,.25); }
-.badge-pending  { background: var(--yellow-dim); color: var(--yellow); border-color: rgba(245,158,11,.25); }
-.badge-expired  { background: rgba(100,100,100,.1); color: var(--text-muted); border-color: var(--slate); }
-.badge-failed   { background: var(--red-dim);    color: var(--red);    border-color: rgba(239,68,68,.25); }
-.badge-lunas    { background: var(--green-dim);  color: var(--green);  border-color: rgba(34,197,94,.25); }
-.badge-belum    { background: var(--yellow-dim); color: var(--yellow); border-color: rgba(245,158,11,.25); }
-.badge-aktif    { background: var(--green-dim);  color: var(--green);  border-color: rgba(34,197,94,.25); }
-.badge-maint    { background: var(--red-dim);    color: var(--red);    border-color: rgba(239,68,68,.25); }
-.badge-dp       { background: var(--blue-dim);   color: var(--blue);   border-color: rgba(59,130,246,.25); }
-.badge-full     { background: var(--volt-dim);   color: var(--volt);   border-color: var(--volt-border); }
+/* Solid badges — mudah dibaca, tidak transparan */
+.badge-success  { background: #16a34a;           color: #fff; }
+.badge-pending  { background: #d97706;           color: #fff; }
+.badge-expired  { background: #52525b;           color: #d4d4d8; }
+.badge-failed   { background: #dc2626;           color: #fff; }
+.badge-lunas    { background: #16a34a;           color: #fff; }
+.badge-belum    { background: #b45309;           color: #fff; }
+.badge-aktif    { background: #16a34a;           color: #fff; }
+.badge-maint    { background: #dc2626;           color: #fff; }
+.badge-dp       { background: #2563eb;           color: #fff; }
+.badge-full     { background: var(--volt);       color: var(--charcoal); }
 
 /* ── Buttons ───────────────────────────────────────────────────── */
 .btn {
@@ -587,15 +610,14 @@ table.admin-table {
     background: var(--slate);
 }
 
-/* ── Recent Booking Mini-Table ─────────────────────────────────── */
+/* ── Booking Code ─────────────────────────────────────── */
 .booking-code {
-    font-family: 'Courier New', monospace;
+    font-family: 'Inter', sans-serif;
     font-size: 0.75rem;
+    font-weight: 700;
     color: var(--volt);
-    background: var(--volt-dim);
-    padding: 0.1rem 0.4rem;
-    border: 1px solid var(--volt-border);
-    border-radius: var(--radius-sm);
+    letter-spacing: 0.03em;
+    white-space: nowrap;
 }
 
 /* ── Confirm Dialog Overlay ─────────────────────────────────────── */
@@ -611,7 +633,7 @@ table.admin-table {
 
 .confirm-overlay.open { display: flex; }
 
-.confirm-box {
+.confirm-box, .detail-box {
     background: var(--slate-dark);
     border: 1px solid var(--slate);
     border-top: 3px solid var(--red);
@@ -619,6 +641,26 @@ table.admin-table {
     max-width: 380px;
     width: 90%;
     border-radius: var(--radius);
+}
+
+.detail-box {
+    border-top: 3px solid var(--volt);
+    max-width: 480px;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    gap: 0.75rem 1rem;
+    font-size: 0.82rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--slate);
+    padding-bottom: 1rem;
+}
+
+.detail-grid strong {
+    color: var(--text-muted);
+    font-weight: 600;
 }
 
 .confirm-box h3 {

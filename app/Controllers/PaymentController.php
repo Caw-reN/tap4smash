@@ -84,18 +84,14 @@ class PaymentController extends BaseController
         // ── Update status berdasarkan callback PaymentKu ──────────────────────
         if ($status === 'success' || $status === 'paid') {
 
-            // F-04: Hitung ulang jumlah_dibayar dan sisa_tagihan
-            $skema           = $booking['skema_pembayaran'];
-            $totalHarga      = (float) $booking['total_harga'];
-            $jumlahDibayar   = ($skema === 'dp') ? $totalHarga * 0.5 : $totalHarga;
-            $sisaTagihan     = $totalHarga - $jumlahDibayar;
-            $statusPelunasan = ($skema === 'full') ? 'lunas' : 'belum_lunas';
+            // F-04: Kalkulasi DP/Full — terpusat di BookingModel::calculatePayment()
+            $payment = $this->bookingModel->calculatePayment($booking);
 
             $this->bookingModel->update($booking['id'], [
                 'status'           => 'success',
-                'jumlah_dibayar'   => $jumlahDibayar,
-                'sisa_tagihan'     => $sisaTagihan,
-                'status_pelunasan' => $statusPelunasan,
+                'jumlah_dibayar'   => $payment['jumlah_dibayar'],
+                'sisa_tagihan'     => $payment['sisa_tagihan'],
+                'status_pelunasan' => $payment['status_pelunasan'],
                 'payment_token'    => $payload['payment_token'] ?? $payload['transaction_id'] ?? null,
             ]);
 

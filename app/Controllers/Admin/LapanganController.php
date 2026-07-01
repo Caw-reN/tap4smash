@@ -135,12 +135,9 @@ class LapanganController extends BaseController
             return redirect()->back()->with('error', 'Lapangan tidak ditemukan.');
         }
 
-        // Cek apakah ada booking aktif
-        $activeBookings = db_connect()
-            ->table('bookings')
-            ->where('lapangan_id', $id)
-            ->whereIn('status', ['pending', 'success'])
-            ->countAllResults();
+        // Cek booking aktif via BookingModel agar tidak ada raw query di controller
+        $bookingModel   = new \App\Models\BookingModel();
+        $activeBookings = $bookingModel->countActiveByLapangan($id);
 
         if ($activeBookings > 0) {
             return redirect()->to(site_url('admin/lapangan'))

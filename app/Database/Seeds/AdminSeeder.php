@@ -18,7 +18,7 @@ class AdminSeeder extends Seeder
     {
         $data = [
             'username'   => 'admin',
-            'password'   => password_hash('tap4smash2025', PASSWORD_BCRYPT),
+            'password'   => password_hash('ijjuuiue', PASSWORD_BCRYPT),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ];

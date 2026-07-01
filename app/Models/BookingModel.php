@@ -17,6 +17,31 @@ class BookingModel extends Model
         'is_checked_in', 'checkin_at', 'checkin_method',
     ];
 
+    // ─── Kalkulasi Pembayaran ──────────────────────────────────────────────────
+
+    /**
+     * Hitung jumlah_dibayar, sisa_tagihan, dan status_pelunasan
+     * berdasarkan skema (dp/full) dan total harga booking.
+     *
+     * Dipanggil dari Home, PaymentController, dan Admin/BookingController
+     * agar logika DP tidak tersebar di banyak tempat.
+     *
+     * @param  array $booking Row booking (minimal: total_harga, skema_pembayaran)
+     * @return array ['jumlah_dibayar', 'sisa_tagihan', 'status_pelunasan']
+     */
+    public function calculatePayment(array $booking): array
+    {
+        $total   = (float) $booking['total_harga'];
+        $isDP    = $booking['skema_pembayaran'] === 'dp';
+        $dibayar = $isDP ? $total * 0.5 : $total;
+
+        return [
+            'jumlah_dibayar'   => $dibayar,
+            'sisa_tagihan'     => $total - $dibayar,
+            'status_pelunasan' => $isDP ? 'belum_lunas' : 'lunas',
+        ];
+    }
+
     // ─── Cleanup ───────────────────────────────────────────────────────────────
 
     /**
@@ -106,6 +131,19 @@ class BookingModel extends Model
         }
 
         return (bool) $this->update($id, $data);
+    }
+
+    // ─── Lapangan Helpers ─────────────────────────────────────────────────────
+
+    /**
+     * Hitung booking aktif (pending/success) milik sebuah lapangan.
+     * Dipakai oleh LapanganController::delete() untuk cek sebelum hapus.
+     */
+    public function countActiveByLapangan(int $lapanganId): int
+    {
+        return $this->whereIn('status', ['pending', 'success'])
+            ->where('lapangan_id', $lapanganId)
+            ->countAllResults();
     }
 
     // ─── Dashboard Stats ──────────────────────────────────────────────────────

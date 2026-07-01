@@ -197,14 +197,29 @@ class BookingController extends BaseController
         }
 
         // ── Cash atau sudah lunas: langsung check-in ──────────────────────────
+        // Bungkus dalam transaction + re-read row untuk cegah double check-in
+        // jika dua request datang bersamaan (misal: admin tekan 2x cepat).
+        $db = db_connect();
+        $db->transStart();
+
+        $fresh = $db->table('bookings')->where('id', $bookingId)->get()->getRowArray();
+        if ($fresh['is_checked_in']) {
+            $db->transRollback();
+            return $this->response->setStatusCode(422)->setJSON([
+                'success' => false,
+                'message' => 'Booking ini sudah check-in (terdeteksi bersamaan).',
+            ]);
+        }
+
         $this->bookingModel->markAsCheckedIn($bookingId, $method);
+        $db->transComplete();
 
         return $this->response->setJSON([
             'success' => true,
             'mode'    => 'done',
             'message' => $method === 'cash'
-                ? '✅ Pelunasan cash berhasil. User berhasil check-in!'
-                : '✅ User berhasil check-in!',
+                ? 'Pelunasan cash berhasil. User berhasil check-in!'
+                : 'User berhasil check-in!',
         ]);
     }
 
@@ -237,7 +252,7 @@ class BookingController extends BaseController
                 'success' => true,
                 'paid'    => true,
                 'done'    => true,
-                'message' => '✅ Pembayaran QRIS terkonfirmasi. User berhasil check-in!',
+                'message' => 'Pembayaran QRIS terkonfirmasi. User berhasil check-in!',
             ]);
         }
 

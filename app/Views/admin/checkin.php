@@ -709,8 +709,8 @@ async function pollQrisStatus() {
         clearInterval(pollInterval);
         pollInterval = null;
         closeQrisModal();
-        showToast(data.message || '✅ Pembayaran berhasil!', 'success');
-        showSuccessResult(data.message || '✅ User berhasil check-in!');
+        showToast(data.message || 'Pembayaran berhasil!', 'success');
+        showSuccessResult(data.message || 'User berhasil check-in!');
     }
 }
 

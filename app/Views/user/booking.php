@@ -66,7 +66,131 @@
         color: var(--text);
     }
     .date-pill.active .day-num { color: #000; }
-    .date-pill.today-pill .day-name { color: var(--volt); }
+    /* TODAY label: putih biasa, baru volt saat active */
+    .date-pill.today-pill .day-name { color: var(--text-muted); }
+    .date-pill.today-pill.active .day-name { color: rgba(0,0,0,.65); }
+
+    /* Kotak Pilih Bulan Ini */
+    .month-picker-pill {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .3rem;
+        padding: .75rem 1rem;
+        border: 2px dashed var(--volt-border);
+        border-radius: 12px;
+        background: var(--volt-dim, rgba(204,255,0,.07));
+        cursor: pointer;
+        transition: all .2s;
+        min-width: 70px;
+        user-select: none;
+        color: var(--volt);
+    }
+    .month-picker-pill:hover {
+        background: rgba(204,255,0,.15);
+        border-color: var(--volt);
+        transform: scale(1.05);
+    }
+    .month-picker-pill .mp-icon { font-size: 1.3rem; }
+    .month-picker-pill .mp-label { font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+
+    /* Modal Kalender */
+    .cal-modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.75);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        backdrop-filter: blur(4px);
+        animation: fadeIn .2s;
+    }
+    .cal-modal-overlay.open { display: flex; }
+    .cal-modal {
+        background: var(--surface2, #1a1f2e);
+        border: 1px solid var(--border, #2a2f3e);
+        border-radius: 16px;
+        padding: 1.5rem;
+        width: min(420px, 94vw);
+        box-shadow: 0 20px 60px rgba(0,0,0,.6);
+        animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to   { transform: translateY(0);    opacity: 1; }
+    }
+    .cal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+    }
+    .cal-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+        color: var(--volt);
+    }
+    .cal-close {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: color .2s;
+        padding: .3rem;
+    }
+    .cal-close:hover { color: var(--text); }
+    .cal-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: .35rem;
+    }
+    .cal-day-label {
+        text-align: center;
+        font-size: .65rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: .08em;
+        padding-bottom: .4rem;
+    }
+    .cal-day {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: .85rem;
+        cursor: pointer;
+        transition: all .15s;
+        border: 1px solid transparent;
+        color: var(--text);
+    }
+    .cal-day:hover:not(.cal-day-past):not(.cal-day-empty) {
+        background: rgba(204,255,0,.15);
+        border-color: var(--volt-border);
+        color: var(--volt);
+    }
+    .cal-day.cal-day-today {
+        border-color: var(--volt-border);
+        color: var(--volt);
+    }
+    .cal-day.cal-day-selected {
+        background: var(--volt);
+        color: #000;
+        border-color: var(--volt);
+    }
+    .cal-day.cal-day-past {
+        opacity: .25;
+        cursor: not-allowed;
+    }
+    .cal-day.cal-day-empty { cursor: default; }
 
     /* 2-column Court Grid */
     .court-card-grid {
@@ -179,25 +303,15 @@
     .slot-time {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 1rem;
+        font-size: .82rem;
         color: var(--text);
         margin-bottom: .2rem;
+        white-space: nowrap;
     }
     .slot-type-label {
         font-size: .65rem;
         font-weight: 600;
         color: var(--text-muted);
-    }
-    .slot-card.slot-peak:not(.slot-taken):not(.slot-selected) { border-color: rgba(245,158,11,.4); }
-    .card-peak-badge {
-        position: absolute;
-        top: .3rem; right: .3rem;
-        font-size: .45rem;
-        font-weight: 800;
-        background: rgba(245,158,11,.2);
-        color: var(--yellow);
-        padding: .1rem .3rem;
-        border-radius: 4px;
     }
 
     /* Wizard Steps */
@@ -370,6 +484,11 @@
                                 <span class="day-num"><?= $dayN ?></span>
                             </div>
                             <?php endfor; ?>
+                            <!-- Kotak Pilih Bulan Ini -->
+                            <div class="month-picker-pill" onclick="openCalModal()" title="Pilih tanggal lain">
+                                <span class="mp-icon"><i class="fa-regular fa-calendar-days"></i></span>
+                                <span class="mp-label">Tanggal Lain</span>
+                            </div>
                         </div>
                     </div>
                     <input type="hidden" name="tanggal_main" id="tanggal_main" value="<?= old('tanggal_main') ?>">
@@ -545,13 +664,23 @@
     </form>
 </div>
 
+<!-- ═══ MODAL KALENDER BULAN INI ═══ -->
+<div class="cal-modal-overlay" id="calModal" onclick="handleModalOverlayClick(event)">
+    <div class="cal-modal" id="calModalBox">
+        <div class="cal-header">
+            <span class="cal-title" id="calModalTitle">Pilih Tanggal</span>
+            <button class="cal-close" onclick="closeCalModal()" title="Tutup"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="cal-grid" id="calGrid"></div>
+    </div>
+</div>
+
 <footer class="footer">
     <p><strong style="color:var(--volt);">Tap4Smash</strong> GOR Sport Center &copy; <?= date('Y') ?></p>
 </footer>
 
 <script>
 const SLOTS_API  = '<?= site_url('api/slots') ?>';
-const PEAK_HOURS = [17, 18, 19, 20, 21];
 const SLOT_HOURS = [6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
 
 let currentStep   = 1;
@@ -567,7 +696,6 @@ function formatDateLong(ymd) {
     if (!ymd) return '—';
     return new Date(ymd + 'T00:00:00').toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 }
-function isPeak(h) { return PEAK_HOURS.includes(h); }
 
 function formatJamMain(slotsArr) {
     if (!slotsArr || slotsArr.length === 0) return '—';
@@ -664,23 +792,19 @@ function renderSlotGrid() {
 
     SLOT_HOURS.forEach(h => {
         const taken = takenSlots.includes(h);
-        const peak  = isPeak(h);
         const sel   = selectedSlots.includes(h);
-        
+
         let classes = 'slot-card';
         if (taken) classes += ' slot-taken';
         if (sel)   classes += ' slot-selected';
-        if (peak && !taken && !sel) classes += ' slot-peak';
 
-        const badge = peak ? `<span class="card-peak-badge">PEAK</span>` : '';
-        const time  = `${pad(h)}:00`;
-        
+        const time = `${pad(h)}:00 - ${pad(h + 1)}:00`;
+
         const card = document.createElement('div');
         card.className = classes;
         card.innerHTML = `
-            ${badge}
             <span class="slot-time">${time}</span>
-            <div class="slot-type-label">${peak ? 'Peak Hour' : 'Standard'}</div>
+            <div class="slot-type-label">Standard</div>
         `;
 
         if (!taken) {
@@ -795,6 +919,81 @@ window.addEventListener('DOMContentLoaded', () => {
         goToStep(1);
     }
 });
+
+// ── MODAL KALENDER BULAN INI ────────────────────────────────────────────────
+function openCalModal() {
+    const now   = new Date();
+    const year  = now.getFullYear();
+    const month = now.getMonth(); // 0-indexed
+    renderCalModal(year, month);
+    document.getElementById('calModal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCalModal() {
+    document.getElementById('calModal').classList.remove('open');
+    document.body.style.overflow = '';
+}
+
+function handleModalOverlayClick(e) {
+    if (e.target === document.getElementById('calModal')) closeCalModal();
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCalModal(); });
+
+function renderCalModal(year, month) {
+    const DAYS   = ['MIN','SEN','SEL','RAB','KAM','JUM','SAB'];
+    const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+    document.getElementById('calModalTitle').textContent = `${MONTHS[month]} ${year}`;
+
+    const grid  = document.getElementById('calGrid');
+    grid.innerHTML = '';
+
+    // Header hari
+    DAYS.forEach(d => {
+        const el = document.createElement('div');
+        el.className = 'cal-day-label';
+        el.textContent = d;
+        grid.appendChild(el);
+    });
+
+    const todayYmd = new Date().toISOString().slice(0,10);
+    const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    // Sel kosong awal
+    for (let i = 0; i < firstDay; i++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day cal-day-empty';
+        grid.appendChild(el);
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const mm  = String(month + 1).padStart(2,'0');
+        const dd  = String(d).padStart(2,'0');
+        const ymd = `${year}-${mm}-${dd}`;
+
+        const isToday = (ymd === todayYmd);
+        const isPast  = (ymd < todayYmd);
+        const isSel   = (ymd === selectedDate);
+
+        const el = document.createElement('div');
+        el.className = 'cal-day';
+        if (isPast)   el.classList.add('cal-day-past');
+        if (isToday)  el.classList.add('cal-day-today');
+        if (isSel)    el.classList.add('cal-day-selected');
+        el.textContent = d;
+
+        if (!isPast) {
+            el.addEventListener('click', () => {
+                selectDate(ymd);
+                closeCalModal();
+            });
+        }
+        grid.appendChild(el);
+    }
+}
 </script>
 
 </body>
