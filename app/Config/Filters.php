@@ -75,9 +75,8 @@ class Filters extends BaseFilters
      */
     public array $globals = [
         'before' => [
-            // CSRF dikecualikan untuk webhook PaymentKu — dikelola via $filters di bawah
-            // 'honeypot',
-            // 'invalidchars',
+            // CSRF untuk semua route POST, kecuali webhook PaymentKu (S-01 + S-02)
+            'csrf' => ['except' => ['payment/callback']],
         ],
         'after' => [
             // 'honeypot',
@@ -110,11 +109,6 @@ class Filters extends BaseFilters
      * @var array<string, array<string, list<string>>>
      */
     public array $filters = [
-        // CSRF aktif untuk semua POST kecuali webhook PaymentKu (S-02 + S-01)
-        'csrf' => [
-            'before' => ['*'],
-            'except' => ['payment/callback'],
-        ],
         // Proteksi semua route /admin/* kecuali halaman login
         'admin' => [
             'before' => [

@@ -42,7 +42,7 @@
     </div>
 
     <!-- Search Form -->
-    <form method="get" action="<?= site_url('cek-status') ?>">
+    <form method="get" action="<?= site_url('cek-status') ?>" onsubmit="setLoadingBtn('btn-cek')">
         <div style="display:flex;gap:.5rem;margin-bottom:2rem;">
             <input type="text"
                    name="kode"
@@ -52,13 +52,19 @@
                    onfocus="this.style.borderColor='var(--volt)'"
                    onblur="this.style.borderColor='var(--border)'"
                    autofocus>
-            <button type="submit"
-                    style="padding:.7rem 1.4rem;background:var(--volt);color:#000;font-family:'Oswald',sans-serif;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;border:none;border-radius:var(--radius);cursor:pointer;white-space:nowrap;transition:background .15s;"
+            <button type="submit" id="btn-cek"
+                    style="position:relative;padding:.7rem 1.4rem;background:var(--volt);color:#000;font-family:'Oswald',sans-serif;font-weight:600;font-size:.85rem;text-transform:uppercase;letter-spacing:.04em;border:none;border-radius:var(--radius);cursor:pointer;white-space:nowrap;transition:background .15s;"
                     onmouseover="this.style.background='#b8e800'" onmouseout="this.style.background='var(--volt)'">
-                <i class="fa-solid fa-search"></i> Cek
+                <span class="btn-label"><i class="fa-solid fa-search"></i> Cek</span>
             </button>
         </div>
     </form>
+<script>
+function setLoadingBtn(id) {
+    const btn = document.getElementById(id);
+    if (btn) btn.classList.add('btn-loading');
+}
+</script>
 
     <!-- Result -->
     <?php if ($kode && ! $booking): ?>

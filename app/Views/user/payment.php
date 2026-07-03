@@ -399,19 +399,16 @@
 
             <!-- QR Image -->
             <div class="qr-image-wrap">
-                <?php if (! empty($qr_url)): ?>
-                    <img src="<?= esc($qr_url) ?>" alt="QR Code Pembayaran" id="qrImage">
+                <?php
+                // Pastikan selalu ada QR URL, fallback menggunakan token transaksi PaymentKu
+                $finalQrUrl = !empty($qr_url) ? $qr_url : (!empty($booking['payment_token']) ? 'https://paymenku.com/api/qris/' . $booking['payment_token'] : '');
+                ?>
+                <?php if (! empty($finalQrUrl)): ?>
+                    <img src="<?= esc($finalQrUrl) ?>" alt="QR Code Pembayaran" id="qrImage">
                 <?php elseif (! empty($qr_string)): ?>
                     <!-- Render QR dari string via API QR generator -->
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?= urlencode($qr_string) ?>&color=000000&bgcolor=FFFFFF&margin=10&format=png"
                          alt="QR Code Pembayaran" id="qrImage">
-                <?php elseif (! empty($pay_url) && empty($qr_string) && empty($qr_url)): ?>
-                    <div class="qr-placeholder" id="qrPlaceholder">
-                        <i class="fa-solid fa-link" style="color:var(--navy); font-size:2.5rem; margin-bottom:.5rem; opacity:1;"></i>
-                        <span style="color:var(--navy); font-weight:800; font-size:1rem; margin-bottom:.3rem;">Link Pembayaran PaymentKu</span>
-                        <span style="font-size:.75rem;color:var(--text-muted); text-align:center; padding: 0 .5rem; margin-bottom:1.25rem; line-height:1.4;">Mode Sandbox / Simulator PaymentKu. Silakan klik tombol ini untuk mensimulasikan pembayaran.</span>
-                        <a href="<?= esc($pay_url) ?>" target="_blank" class="btn-primary" style="font-size:.85rem; padding:.65rem 1.4rem; text-decoration:none; color:#000; background:var(--accent); border-radius:6px; font-weight:800; display:inline-block; transition:all .2s; font-family:'Inter',sans-serif; text-transform:none; letter-spacing:0;">Buka Simulator Pembayaran</a>
-                    </div>
                 <?php elseif (! empty($error_message)): ?>
                     <div class="qr-placeholder" id="qrPlaceholder" style="color: var(--red);">
                         <i class="fa-solid fa-triangle-exclamation" style="opacity:1; color:var(--red);"></i>
@@ -426,7 +423,7 @@
                     </div>
                 <?php endif; ?>
                 <!-- Scanning animation (only when QR present) -->
-                <?php if (! empty($qr_url) || ! empty($qr_string)): ?>
+                <?php if (! empty($finalQrUrl) || ! empty($qr_string)): ?>
                 <div class="scan-line" id="scanLine"></div>
                 <?php endif; ?>
                 <!-- Decorative corners -->

@@ -292,8 +292,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="btn-login">
-                    <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Dashboard
+                <button type="submit" class="btn-login" id="btn-login" style="position:relative;">
+                    <span class="btn-login-label"><i class="fa-solid fa-right-to-bracket"></i> Masuk ke Dashboard</span>
                 </button>
             </form>
         </div>
@@ -306,5 +306,15 @@
     </div>
 
 </div>
+<script>
+document.querySelector('form').addEventListener('submit', function() {
+    const btn   = document.getElementById('btn-login');
+    const label = btn.querySelector('.btn-login-label');
+    btn.disabled = true;
+    btn.style.opacity = '.75';
+    btn.style.cursor  = 'not-allowed';
+    if (label) label.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Memproses...';
+});
+</script>
 </body>
 </html>

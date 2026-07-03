@@ -328,9 +328,17 @@ class Home extends BaseController
             if ($statusResult['status'] === 'success') {
                 return redirect()->to(site_url('booking/konfirmasi/' . $bookingCode));
             }
-            // Gunakan token yang ada. Ambil pay_url dari checkStatus
+            // Gunakan token yang ada. Ambil data dari checkStatus
             $raw = $statusResult['raw']['data'] ?? [];
-            $payUrl = $raw['pay_url'] ?? '';
+            $payUrl   = $raw['pay_url'] ?? '';
+            $qrUrl    = $raw['payment_info']['qr_url'] ?? '';
+            if (empty($qrUrl)) {
+                $trxId = $raw['trx_id'] ?? $booking['payment_token'];
+                if (!empty($trxId)) {
+                    $qrUrl = 'https://paymenku.com/api/qris/' . $trxId;
+                }
+            }
+            $qrString = $raw['payment_info']['qr_string'] ?? '';
         } else {
             // Buat transaksi baru
             $callbackUrl = site_url('payment/callback');

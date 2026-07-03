@@ -71,6 +71,28 @@ body {
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; }
 
+/* ── Button Loading State ─────────────────────────────────────── */
+.btn-loading {
+    position: relative;
+    pointer-events: none !important;
+    opacity: .7 !important;
+    cursor: not-allowed !important;
+}
+.btn-loading .btn-label { opacity: 0; }
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 18px;
+    height: 18px;
+    border: 2.5px solid rgba(0,0,0,.25);
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: btn-spin .65s linear infinite;
+}
+@keyframes btn-spin { to { transform: rotate(360deg); } }
+
 /* ── Navbar ──────────────────────────────────────────────────── */
 .navbar {
     position: sticky;

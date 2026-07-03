@@ -697,8 +697,8 @@
 
                 <div style="display:flex; justify-content:space-between; align-items:center;">
                     <button type="button" class="btn-step btn-prev" onclick="goToStep(3)"><i class="fa-solid fa-arrow-left"></i> Edit Data</button>
-                    <button type="submit" class="btn-step btn-next" style="font-size:1.1rem; padding: 1rem 2rem; background:var(--volt); color:#000;">
-                        <i class="fa-solid fa-qrcode"></i> Lanjut Pembayaran
+                    <button type="submit" id="btn-submit-booking" class="btn-step btn-next" style="font-size:1.1rem; padding: 1rem 2rem; background:var(--volt); color:#000;">
+                        <span class="btn-label"><i class="fa-solid fa-qrcode"></i> Lanjut Pembayaran</span>
                     </button>
                 </div>
             </div>
@@ -983,6 +983,12 @@ function updateUI() {
 document.getElementById('nama_pemesan').addEventListener('input', updateUI);
 document.getElementById('nomor_wa').addEventListener('input', updateUI);
 document.querySelectorAll('input[name="skema_pembayaran"]').forEach(el => el.addEventListener('change', updateUI));
+
+// ── Loading state saat form disubmit ─────────────────────────────
+document.querySelector('form').addEventListener('submit', function() {
+    const btn = document.getElementById('btn-submit-booking');
+    if (btn) btn.classList.add('btn-loading');
+});
 
 window.addEventListener('DOMContentLoaded', () => {
     const today = '<?= date('Y-m-d') ?>';

@@ -56,7 +56,13 @@ const store = {
     },
     /** Ambil pesan dari store (dipanggil oleh getMessage) */
     loadMessage(jid, id) {
-        return msgStore.get(jid)?.get(id)
+        let msg = msgStore.get(jid)?.get(id)
+        if (msg) return msg
+        // Jika tidak ada di JID langsung, cari di seluruh chat (karena multi-device sering pakai JID dengan :0 / :1 atau @c.us saat retry)
+        for (const chat of msgStore.values()) {
+            if (chat.has(id)) return chat.get(id)
+        }
+        return undefined
     },
 }
 
@@ -77,6 +83,18 @@ process.on('uncaughtException', (err) => {
     console.error('[WA] Uncaught exception (service tetap jalan):', err.message)
 })
 
+// ─── Cache Retry Counter (FIX utama "menunggu pesan" di multi-device) ──────────
+const msgRetryCounterCache = {
+    _map: new Map(),
+    get(key) { return this._map.get(key) },
+    set(key, val) {
+        this._map.set(key, val)
+        if (this._map.size > 1000) this._map.delete(this._map.keys().next().value)
+    },
+    del(key) { this._map.delete(key) },
+    flushAll() { this._map.clear() }
+}
+
 // ─── Baileys: Connect ke WhatsApp ─────────────────────────────────────────────
 async function connectToWhatsApp() {
     const { state, saveCreds } = await useMultiFileAuthState('./auth_info')
@@ -92,6 +110,7 @@ async function connectToWhatsApp() {
             // → lebih stabil saat banyak pesan masuk bersamaan
             keys: makeCacheableSignalKeyStore(state.keys, logger),
         },
+        msgRetryCounterCache,
         printQRInTerminal: false,
         logger,
         shouldIgnoreJid:   jid => isJidBroadcast(jid),
@@ -100,8 +119,14 @@ async function connectToWhatsApp() {
         // Baileys memanggil fungsi ini. Jika kita bisa kembalikan
         // message-nya → pesan berhasil terkirim ulang & tidak "menunggu".
         getMessage: async (key) => {
-            const msg = await store.loadMessage(key.remoteJid, key.id)
-            return msg?.message || undefined
+            console.log(`[WA] 🔄 WhatsApp meminta re-enkripsi untuk pesan ID: ${key.id} (JID: ${key.remoteJid})`)
+            const msg = store.loadMessage(key.remoteJid, key.id)
+            if (msg) {
+                console.log(`[WA] ✅ Pesan ditemukan & dikirim ulang untuk re-enkripsi: ${key.id}`)
+                return msg.message || undefined
+            }
+            console.warn(`[WA] ⚠️ Pesan ID: ${key.id} tidak ditemukan di store untuk re-enkripsi!`)
+            return undefined
         },
     })
 
@@ -169,7 +194,10 @@ async function kirimPesan(phone, message) {
     const cleanPhone = phone.replace(/\D/g, '')
     const jid        = `${cleanPhone}@s.whatsapp.net`
 
-    await waSocket.sendMessage(jid, { text: message })
+    const sentMsg = await waSocket.sendMessage(jid, { text: message })
+    if (sentMsg) {
+        store.upsert([sentMsg])
+    }
     return true
 }
 

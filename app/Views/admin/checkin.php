@@ -221,6 +221,7 @@
 }
 .action-row { display: flex; gap: .75rem; }
 .action-btn {
+    position: relative;
     flex: 1;
     display: inline-flex;
     align-items: center;
@@ -568,8 +569,8 @@
             Apakah Anda sudah menerima pembayaran tunai sebesar <strong id="cash-modal-amount" style="color:#dc2626; font-size:1.05rem;"></strong> untuk booking <strong id="cash-modal-code" style="color:var(--navy);"></strong>?
         </div>
         <div style="display: flex; gap: .75rem; justify-content: center;">
-            <button type="button" class="action-btn action-btn-cash" id="btn-confirm-cash" style="flex: 1.4; font-size: .88rem; padding: .85rem .75rem; white-space: nowrap; justify-content: center;">
-                <i class="fa-solid fa-circle-check" style="font-size: 1.1rem;"></i> TERIMA & CHECK-IN
+            <button type="button" class="action-btn action-btn-cash" id="btn-confirm-cash" style="position:relative;flex: 1.4; font-size: .88rem; padding: .85rem .75rem; white-space: nowrap; justify-content: center;">
+                <span class="btn-label"><i class="fa-solid fa-circle-check" style="font-size: 1.1rem;"></i> TERIMA &amp; CHECK-IN</span>
             </button>
             <button type="button" class="action-btn" onclick="closeCashModal()" style="flex: 0.8; font-size: .88rem; padding: .85rem .75rem; background: var(--surface2); color: var(--navy); border: 1px solid var(--border); white-space: nowrap; justify-content: center;">
                 <i class="fa-solid fa-xmark" style="font-size: 1.1rem; color: var(--text-muted);"></i> BATAL
@@ -752,15 +753,15 @@ function showResultFound(data) {
 
     const actionButtons = needsPay
         ? `<div class="action-row">
-                <button class="action-btn action-btn-cash" onclick="confirmCash(${b.id}, '${b.booking_code}', '${sisa}')">
-                    <i class="fa-solid fa-money-bill"></i> Cash &nbsp;<small>(${sisa})</small>
+                <button class="action-btn action-btn-cash" onclick="confirmCash(${b.id}, '${b.booking_code}', '${sisa}', this)">
+                    <span class="btn-label"><i class="fa-solid fa-money-bill"></i> Cash &nbsp;<small>(${sisa})</small></span>
                 </button>
-                <button class="action-btn action-btn-qris" onclick="doCheckin(${b.id}, 'qris')">
-                    <i class="fa-solid fa-qrcode"></i> QRIS &nbsp;<small>(${sisa})</small>
+                <button class="action-btn action-btn-qris" onclick="doCheckinWithLoad(${b.id}, 'qris', this)">
+                    <span class="btn-label"><i class="fa-solid fa-qrcode"></i> QRIS &nbsp;<small>(${sisa})</small></span>
                 </button>
            </div>`
-        : `<button class="action-btn action-btn-success" onclick="doCheckin(${b.id}, null)">
-                <i class="fa-solid fa-circle-check"></i> Konfirmasi Check-in
+        : `<button class="action-btn action-btn-success" onclick="doCheckinWithLoad(${b.id}, null, this)">
+                <span class="btn-label"><i class="fa-solid fa-circle-check"></i> Konfirmasi Check-in</span>
            </button>`;
 
     document.getElementById('result-idle').style.display    = 'none';
@@ -819,17 +820,24 @@ function showResultFound(data) {
 
 // ── Check-in Actions ──────────────────────────────────────────────────────────
 
-async function doCheckin(bookingId, method) {
+// Wrapper dengan loading state
+function doCheckinWithLoad(bookingId, method, btnEl) {
+    if (btnEl) btnEl.classList.add('btn-loading');
+    doCheckin(bookingId, method, btnEl);
+}
+
+async function doCheckin(bookingId, method, btnEl) {
     const res  = await apiFetch(PROSES_URL, { booking_id: bookingId, method: method });
     const data = await res.json();
 
     if (!data.success) {
+        if (btnEl) btnEl.classList.remove('btn-loading'); // restore on error
         showToast('❌ ' + (data.message || 'Terjadi kesalahan.'), 'error');
         return;
     }
 
     if (data.mode === 'qris_pending') {
-        // Tampilkan modal QRIS
+        if (btnEl) btnEl.classList.remove('btn-loading'); // modal QRIS sudah jadi feedback
         openQrisModal(data, bookingId);
         return;
     }
@@ -964,11 +972,14 @@ function closeQrisModal() {
 
 // ── Modal konfirmasi CASH ─────────────────────────────────────────────────────
 
-function confirmCash(bookingId, code, sisa) {
+function confirmCash(bookingId, code, sisa, originBtn) {
     document.getElementById('cash-modal-amount').textContent = sisa;
     document.getElementById('cash-modal-code').textContent = code;
     const btn = document.getElementById('btn-confirm-cash');
+    btn.classList.remove('btn-loading'); // reset state
     btn.onclick = function() {
+        btn.classList.add('btn-loading');  // loading saat konfirmasi
+        if (originBtn) originBtn.classList.remove('btn-loading');
         closeCashModal();
         doCheckin(bookingId, 'cash');
     };

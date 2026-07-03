@@ -19,20 +19,26 @@ class PaymentKu
     public function __construct()
     {
         $settingModel = new SettingModel();
-        
-        // Ambil dari database, fallback ke env jika belum di-set
-        $this->apiKey  = $settingModel->getValue('paymentku_api_key', env('paymentku.secretKey', ''));
-        
-        $envBaseUrl = env('paymentku.baseUrl', 'https://paymenku.com/api/v1');
-        // Jika env masih menggunakan URL usang (api.paymentku.com), paksa pakai URL baru
-        if (strpos($envBaseUrl, 'api.paymentku.com') !== false) {
-            $envBaseUrl = 'https://paymenku.com/api/v1';
+
+        // Ambil mode (sandbox / production)
+        $mode = $settingModel->getValue('paymentku_mode', 'sandbox');
+
+        // Ambil API key dari database, fallback ke env
+        $this->apiKey = $settingModel->getValue('paymentku_api_key', env('paymentku.secretKey', ''));
+
+        // Base URL resmi PaymentKu adalah https://paymenku.com/api/v1 untuk kedua mode (live maupun sandbox)
+        $defaultUrl = 'https://paymenku.com/api/v1';
+        $savedUrl   = $settingModel->getValue('paymentku_base_url', '');
+
+        // Jika URL yang tersimpan kosong atau masih menggunakan URL usang (sandbox.paymenku.com / api.paymentku.com),
+        // gunakan defaultUrl resmi.
+        if (empty($savedUrl) || str_contains($savedUrl, 'sandbox') || str_contains($savedUrl, 'paymentku.com')) {
+            $this->baseUrl = $defaultUrl;
+        } else {
+            $this->baseUrl = rtrim($savedUrl, '/');
         }
-        $this->baseUrl = $settingModel->getValue('paymentku_base_url', $envBaseUrl);
-        if (strpos($this->baseUrl, 'api.paymentku.com') !== false) {
-            $this->baseUrl = 'https://paymenku.com/api/v1';
-        }
-        $this->baseUrl = rtrim($this->baseUrl, '/');
+
+        log_message('debug', '[PaymentKu] mode={m} baseUrl={u}', ['m' => $mode, 'u' => $this->baseUrl]);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -83,11 +89,16 @@ class PaymentKu
             $data = json_decode($response->getBody(), true);
 
             if (($data['status'] ?? '') === 'success') {
+                $trxId = $data['data']['trx_id'] ?? $orderId;
+                $qrUrl = $data['data']['payment_info']['qr_url'] ?? '';
+                if (empty($qrUrl) && !empty($trxId)) {
+                    $qrUrl = 'https://paymenku.com/api/qris/' . $trxId;
+                }
                 return [
                     'success'   => true,
-                    'qr_url'    => $data['data']['payment_info']['qr_url'] ?? '',
+                    'qr_url'    => $qrUrl,
                     'qr_string' => $data['data']['payment_info']['qr_string'] ?? '',
-                    'token'     => $data['data']['trx_id'] ?? $orderId,
+                    'token'     => $trxId,
                     'pay_url'   => $data['data']['pay_url'] ?? '',
                     'error'     => '',
                 ];

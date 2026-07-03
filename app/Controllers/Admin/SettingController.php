@@ -12,6 +12,7 @@ class SettingController extends BaseController
         $settingModel = new SettingModel();
 
         $data = [
+            'paymentku_mode'           => $settingModel->getValue('paymentku_mode', 'sandbox'),
             'paymentku_api_key'        => $settingModel->getValue('paymentku_api_key', env('paymentku.secretKey', '')),
             'paymentku_webhook_secret' => $settingModel->getValue('paymentku_webhook_secret', env('paymentku.webhookSecret', '')),
             'paymentku_base_url'       => $settingModel->getValue('paymentku_base_url', env('paymentku.baseUrl', 'https://paymenku.com/api/v1')),
@@ -28,21 +29,31 @@ class SettingController extends BaseController
     {
         $settingModel = new SettingModel();
 
+        $mode     = $this->request->getPost('paymentku_mode');
         $apiKey   = $this->request->getPost('paymentku_api_key');
         $whSecret = $this->request->getPost('paymentku_webhook_secret');
         $baseUrl  = $this->request->getPost('paymentku_base_url');
 
+        // Simpan mode (sandbox / production)
+        if (in_array($mode, ['sandbox', 'production'])) {
+            $settingModel->setValue('paymentku_mode', $mode);
+            // Base URL resmi untuk kedua mode adalah https://paymenku.com/api/v1
+            if (empty($baseUrl)) {
+                $settingModel->setValue('paymentku_base_url', 'https://paymenku.com/api/v1');
+            }
+        }
         if ($apiKey !== null) {
             $settingModel->setValue('paymentku_api_key', $apiKey);
         }
         if ($whSecret !== null) {
             $settingModel->setValue('paymentku_webhook_secret', $whSecret);
         }
-        if ($baseUrl !== null) {
+        if ($baseUrl !== null && $baseUrl !== '') {
             $settingModel->setValue('paymentku_base_url', $baseUrl);
         }
 
-        return redirect()->to('admin/settings')->with('success', 'Pengaturan berhasil disimpan.');
+        $modeLabel = $mode === 'production' ? 'Production 🚀' : 'Sandbox 🧪';
+        return redirect()->to('admin/settings')->with('success', "Pengaturan berhasil disimpan. Mode aktif: {$modeLabel}");
     }
 
     public function updateMaps()
