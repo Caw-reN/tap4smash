@@ -4,18 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran — <?= esc($booking['booking_code']) ?> — Tap4Smash</title>
+    <link rel="icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= base_url('css/user.css') ?>">
     <style>
         /* ── QR Payment Page Styles ─────────────────────────────── */
         .payment-page {
             min-height: 100vh;
-            background:
-                radial-gradient(ellipse 70% 50% at 50% -10%, rgba(204,255,0,.10) 0%, transparent 60%),
-                var(--charcoal);
+            background: var(--bg);
             display: flex;
             flex-direction: column;
         }
@@ -23,7 +23,7 @@
         .payment-wrap {
             max-width: 780px;
             margin: 0 auto;
-            padding: 2rem 1.5rem 4rem;
+            padding: 2.5rem 1.5rem 4rem;
             width: 100%;
         }
 
@@ -35,47 +35,38 @@
             align-items: start;
         }
 
-        /* Stack vertically on mobile — handled by user.css .payment-grid rule */
-
         /* ── QR Box ─── */
         .qr-box {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 16px;
-            padding: 1.75rem;
+            padding: 2rem 1.5rem;
             text-align: center;
             position: relative;
             overflow: hidden;
-        }
-
-        .qr-box::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, var(--volt), #88ff00);
+            box-shadow: var(--shadow-md);
         }
 
         .qris-badge {
             display: inline-flex;
             align-items: center;
             gap: .4rem;
-            padding: .25rem .8rem;
-            background: #fffbeb;
-            border: 1px solid #f59e0b;
+            padding: .35rem .9rem;
+            background: var(--navy-dim);
+            border: 1px solid rgba(15,32,68,.15);
             border-radius: 50px;
-            font-size: .65rem;
+            font-size: .68rem;
             font-weight: 800;
-            color: #92400e;
+            color: var(--navy);
             text-transform: uppercase;
-            letter-spacing: .1em;
-            margin-bottom: 1.25rem;
+            letter-spacing: .08em;
+            margin-bottom: 1.5rem;
         }
 
         .qr-image-wrap {
             position: relative;
             display: inline-block;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .qr-image-wrap img {
@@ -83,12 +74,15 @@
             height: 200px;
             border-radius: 12px;
             display: block;
+            border: 1px solid var(--border);
+            padding: 5px;
+            background: #fff;
         }
 
         /* Fallback saat QR belum tersedia */
         .qr-placeholder {
             width: 200px;
-            height: 200px;
+            min-height: 200px;
             background: var(--surface2);
             border: 2px dashed var(--border);
             border-radius: 12px;
@@ -99,11 +93,12 @@
             gap: .5rem;
             color: var(--text-muted);
             font-size: .8rem;
+            padding: 1.25rem;
         }
 
         .qr-placeholder i {
-            font-size: 3rem;
-            opacity: .3;
+            font-size: 2.5rem;
+            opacity: .4;
         }
 
         /* Corner decorators */
@@ -111,7 +106,7 @@
             position: absolute;
             width: 16px;
             height: 16px;
-            border-color: var(--volt);
+            border-color: var(--navy);
             border-style: solid;
         }
         .qr-corner.tl { top: -2px; left: -2px; border-width: 3px 0 0 3px; border-radius: 4px 0 0 0; }
@@ -120,20 +115,21 @@
         .qr-corner.br { bottom: -2px; right: -2px; border-width: 0 3px 3px 0; border-radius: 0 0 4px 0; }
 
         .qr-amount {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.5rem;
-            color: var(--volt);
-            margin-bottom: .2rem;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--navy);
+            margin-bottom: .15rem;
+            letter-spacing: -.01em;
         }
 
         .qr-amount-label {
-            font-size: .7rem;
+            font-size: .72rem;
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: .12em;
             font-weight: 600;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         /* ── Countdown ─── */
@@ -141,7 +137,7 @@
             position: relative;
             width: 72px;
             height: 72px;
-            margin: 0 auto 1rem;
+            margin: 0 auto .75rem;
         }
 
         .countdown-ring svg {
@@ -156,7 +152,7 @@
 
         .countdown-ring .ring-progress {
             fill: none;
-            stroke: var(--volt);
+            stroke: var(--navy);
             stroke-width: 4;
             stroke-linecap: round;
             stroke-dasharray: 188.5;
@@ -170,19 +166,19 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
             font-size: 1rem;
         }
 
-        .countdown-ring .ring-label span { color: var(--text); }
+        .countdown-ring .ring-label span { color: var(--navy); }
 
         /* Scanning animation */
         .scan-line {
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--volt), transparent);
+            background: linear-gradient(90deg, transparent, var(--navy), transparent);
             animation: scan 2s ease-in-out infinite;
             pointer-events: none;
         }
@@ -198,13 +194,14 @@
             display: none;
             position: absolute;
             inset: 0;
-            background: rgba(13,17,23,.92);
+            background: rgba(255,255,255,.95);
             border-radius: 16px;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             gap: 1rem;
             z-index: 10;
+            backdrop-filter: blur(4px);
         }
 
         .payment-status-overlay.show { display: flex; }
@@ -234,20 +231,27 @@
             border: 1px solid var(--border);
             border-radius: 16px;
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
         .detail-box-header {
-            background: var(--surface2);
+            background: var(--navy);
             border-bottom: 1px solid var(--border);
             padding: 1rem 1.25rem;
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Oswald', sans-serif;
             font-weight: 700;
-            font-size: .78rem;
+            font-size: .82rem;
             text-transform: uppercase;
             letter-spacing: .08em;
             display: flex;
             align-items: center;
-            gap: .5rem;
+            gap: .6rem;
+            color: #fff;
+        }
+
+        .detail-box-header i {
+            color: var(--volt);
+            font-size: 1rem;
         }
 
         .detail-box-body { padding: 1.25rem; }
@@ -256,43 +260,43 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: .55rem 0;
+            padding: .6rem 0;
             border-bottom: 1px solid var(--border);
-            font-size: .83rem;
+            font-size: .85rem;
             gap: .75rem;
         }
 
         .detail-item:last-child { border-bottom: none; }
         .detail-item .lbl { color: var(--text-muted); flex-shrink: 0; }
-        .detail-item .val { font-weight: 600; text-align: right; }
+        .detail-item .val { font-weight: 600; text-align: right; color: var(--text); }
 
         /* ── Instruction steps ─── */
         .steps-mini {
             margin-top: 1.25rem;
             display: flex;
             flex-direction: column;
-            gap: .6rem;
+            gap: .65rem;
         }
 
         .step-mini {
             display: flex;
             align-items: flex-start;
             gap: .65rem;
-            font-size: .8rem;
+            font-size: .82rem;
             color: var(--text-muted);
             line-height: 1.5;
         }
 
         .step-mini .num {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            border: 1px solid var(--volt-border);
-            background: var(--volt-dim);
-            color: var(--volt);
-            font-family: 'Montserrat', sans-serif;
-            font-size: .65rem;
-            font-weight: 900;
+            border: 1px solid rgba(15,32,68,.2);
+            background: var(--navy-dim);
+            color: var(--navy);
+            font-family: 'Oswald', sans-serif;
+            font-size: .68rem;
+            font-weight: 700;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -303,21 +307,22 @@
         /* ── Status bar ─── */
         .status-bar {
             margin-top: 1rem;
-            padding: .65rem 1rem;
+            padding: .75rem 1rem;
             background: rgba(245,158,11,.08);
             border: 1px solid rgba(245,158,11,.25);
             border-radius: 8px;
             display: flex;
             align-items: center;
             gap: .6rem;
-            font-size: .8rem;
-            color: var(--yellow);
+            font-size: .82rem;
+            font-weight: 600;
+            color: #92400e;
         }
 
         .status-bar .dot {
             width: 8px; height: 8px;
             border-radius: 50%;
-            background: var(--yellow);
+            background: #f59e0b;
             animation: pulse-dot 1.2s infinite;
             flex-shrink: 0;
         }
@@ -344,9 +349,9 @@
             font-family: 'Courier New', monospace;
             font-weight: 700;
             font-size: .9rem;
-            color: var(--volt);
-            background: rgba(0,0,0,.4);
-            border: 1px solid var(--volt-border);
+            color: var(--navy);
+            background: var(--navy-dim);
+            border: 1px solid rgba(15,32,68,.2);
             padding: .2rem .7rem;
             border-radius: 5px;
             letter-spacing: .08em;
@@ -357,8 +362,8 @@
 
 <nav class="navbar">
     <div class="navbar-brand">
-        <span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
-        <h1><a href="<?= site_url('/') ?>" style="color:inherit;">Tap4Smash <span>GOR Sport Center</span></a></h1>
+        <?php $__logoExts=['png','jpg','jpeg','webp']; $__logo=null; foreach($__logoExts as $__e){if(file_exists(FCPATH.'img/logo.'.$__e)){$__logo=base_url('img/logo.'.$__e).'?v='.filemtime(FCPATH.'img/logo.'.$__e);break;}} ?>
+        <?php if($__logo): ?><a href="<?= site_url('/') ?>"><img src="<?= $__logo ?>" alt="Tap4Smash" style="height:38px;width:auto;"></a><?php else: ?><a href="<?= site_url('/') ?>" style="color:inherit;"><span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span></a><?php endif; ?>
     </div>
 </nav>
 
@@ -366,13 +371,13 @@
 
     <!-- Page header -->
     <div style="margin-bottom:1.75rem;">
-        <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--volt);margin-bottom:.4rem;">
+        <div style="font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.15em;color:var(--navy);margin-bottom:.4rem;">
             <i class="fa-solid fa-qrcode"></i> Pembayaran QRIS
         </div>
-        <h2 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.4rem;text-transform:uppercase;margin-bottom:.25rem;">
+        <h2 style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.5rem;text-transform:uppercase;margin-bottom:.3rem;color:var(--text);">
             Scan QR untuk Membayar
         </h2>
-        <p style="color:var(--text-muted);font-size:.83rem;">
+        <p style="color:var(--text-muted);font-size:.85rem;">
             Kode Booking: <span class="booking-code-pill"><?= esc($booking['booking_code']) ?></span>
         </p>
     </div>
@@ -384,8 +389,8 @@
             <!-- Status overlay (muncul saat payment berhasil) -->
             <div class="payment-status-overlay" id="successOverlay">
                 <div class="check-anim"><i class="fa-solid fa-check"></i></div>
-                <div style="font-family:'Montserrat',sans-serif;font-weight:900;color:var(--green);font-size:.9rem;text-transform:uppercase;">Pembayaran Berhasil!</div>
-                <div style="font-size:.78rem;color:var(--text-muted);">Mengalihkan ke konfirmasi...</div>
+                <div style="font-family:'Oswald',sans-serif;font-weight:700;color:var(--green);font-size:1rem;text-transform:uppercase;">Pembayaran Berhasil!</div>
+                <div style="font-size:.82rem;color:var(--text-muted);">Mengalihkan ke konfirmasi...</div>
             </div>
 
             <div class="qris-badge">
@@ -398,27 +403,26 @@
                     <img src="<?= esc($qr_url) ?>" alt="QR Code Pembayaran" id="qrImage">
                 <?php elseif (! empty($qr_string)): ?>
                     <!-- Render QR dari string via API QR generator -->
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?= urlencode($qr_string) ?>&color=CCFF00&bgcolor=161B22&margin=10&format=png"
-                         alt="QR Code Pembayaran" id="qrImage"
-                         style="background:var(--surface2);">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=<?= urlencode($qr_string) ?>&color=000000&bgcolor=FFFFFF&margin=10&format=png"
+                         alt="QR Code Pembayaran" id="qrImage">
                 <?php elseif (! empty($pay_url) && empty($qr_string) && empty($qr_url)): ?>
-                    <div class="qr-placeholder" id="qrPlaceholder" style="background:var(--volt-dim); border-color:var(--volt-border); border-style:solid; border-width:2px; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-                        <i class="fa-solid fa-link" style="color:var(--volt); font-size:2rem; margin-bottom:.5rem;"></i>
-                        <span style="color:#fff; font-weight:700; margin-bottom:.2rem;">Link Pembayaran PaymentKu</span>
-                        <span style="font-size:.7rem;color:var(--text-muted); text-align:center; padding: 0 1rem; margin-bottom:1rem;">Mode Sandbox / Simulator PaymentKu. Silakan klik tombol ini untuk mensimulasikan pembayaran.</span>
-                        <a href="<?= esc($pay_url) ?>" target="_blank" class="btn-primary" style="font-size:.85rem; padding:.5rem 1rem; text-decoration:none;">Buka Simulator Pembayaran</a>
+                    <div class="qr-placeholder" id="qrPlaceholder">
+                        <i class="fa-solid fa-link" style="color:var(--navy); font-size:2.5rem; margin-bottom:.5rem; opacity:1;"></i>
+                        <span style="color:var(--navy); font-weight:800; font-size:1rem; margin-bottom:.3rem;">Link Pembayaran PaymentKu</span>
+                        <span style="font-size:.75rem;color:var(--text-muted); text-align:center; padding: 0 .5rem; margin-bottom:1.25rem; line-height:1.4;">Mode Sandbox / Simulator PaymentKu. Silakan klik tombol ini untuk mensimulasikan pembayaran.</span>
+                        <a href="<?= esc($pay_url) ?>" target="_blank" class="btn-primary" style="font-size:.85rem; padding:.65rem 1.4rem; text-decoration:none; color:#000; background:var(--accent); border-radius:6px; font-weight:800; display:inline-block; transition:all .2s; font-family:'Inter',sans-serif; text-transform:none; letter-spacing:0;">Buka Simulator Pembayaran</a>
                     </div>
                 <?php elseif (! empty($error_message)): ?>
                     <div class="qr-placeholder" id="qrPlaceholder" style="color: var(--red);">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <span>Gagal Memuat QR</span>
-                        <span style="font-size:.7rem;color:var(--text-muted); text-align:center; padding: 0 1rem;"><?= esc($error_message) ?></span>
+                        <i class="fa-solid fa-triangle-exclamation" style="opacity:1; color:var(--red);"></i>
+                        <span style="font-weight:700;">Gagal Memuat QR</span>
+                        <span style="font-size:.75rem;color:var(--text-muted); text-align:center; padding: 0 1rem;"><?= esc($error_message) ?></span>
                     </div>
                 <?php else: ?>
                     <div class="qr-placeholder" id="qrPlaceholder">
                         <i class="fa-solid fa-qrcode"></i>
-                        <span>Memuat QR...</span>
-                        <span style="font-size:.7rem;color:var(--text-muted);">Menghubungi PaymentKu</span>
+                        <span style="font-weight:700; color:var(--text);">Memuat QR...</span>
+                        <span style="font-size:.75rem;color:var(--text-muted);">Menghubungi PaymentKu</span>
                     </div>
                 <?php endif; ?>
                 <!-- Scanning animation (only when QR present) -->
@@ -453,7 +457,7 @@
                 </svg>
                 <div class="ring-label"><span id="countdownText">--:--</span></div>
             </div>
-            <div style="font-size:.7rem;color:var(--text-muted);margin-top:-.3rem;">Sisa waktu pembayaran</div>
+            <div style="font-size:.75rem;color:var(--text-muted);margin-top:-.3rem;">Sisa waktu pembayaran</div>
         </div>
 
         <!-- ── Kolom kanan: Detail ── -->
@@ -467,7 +471,7 @@
             <!-- Detail transaksi -->
             <div class="detail-box" style="margin-top:1rem;">
                 <div class="detail-box-header">
-                    <i class="fa-solid fa-receipt" style="color:var(--volt);"></i> Detail Transaksi
+                    <i class="fa-solid fa-receipt"></i> Detail Transaksi
                 </div>
                 <div class="detail-box-body">
                     <div class="detail-item">
@@ -496,14 +500,14 @@
                     </div>
                     <div class="detail-item">
                         <span class="lbl" style="font-weight:700;">Bayar Sekarang</span>
-                        <span class="val" style="color:var(--volt);font-family:'Montserrat',sans-serif;font-size:1rem;">
+                        <span class="val" style="color:var(--navy);font-family:'Oswald',sans-serif;font-size:1.05rem;font-weight:700;">
                             Rp <?= number_format($jumlah_bayar, 0, ',', '.') ?>
                         </span>
                     </div>
                     <?php if ($booking['skema_pembayaran'] === 'dp'): ?>
                     <div class="detail-item">
                         <span class="lbl">Sisa di Kasir</span>
-                        <span class="val" style="color:var(--yellow);">Rp <?= number_format($booking['total_harga'] * 0.5, 0, ',', '.') ?></span>
+                        <span class="val" style="color:var(--yellow);font-weight:700;">Rp <?= number_format($booking['total_harga'] * 0.5, 0, ',', '.') ?></span>
                     </div>
                     <?php endif; ?>
                 </div>
@@ -512,7 +516,7 @@
             <!-- Cara bayar -->
             <div class="detail-box" style="margin-top:1rem;">
                 <div class="detail-box-header">
-                    <i class="fa-solid fa-circle-info" style="color:var(--volt);"></i> Cara Pembayaran
+                    <i class="fa-solid fa-circle-info"></i> Cara Pembayaran
                 </div>
                 <div class="detail-box-body">
                     <div class="steps-mini">
@@ -530,11 +534,11 @@
                         </div>
                         <div class="step-mini">
                             <div class="num">4</div>
-                            <span>Konfirmasi pembayaran. Status di halaman ini akan <strong style="color:var(--volt);">otomatis diperbarui</strong>.</span>
+                            <span>Konfirmasi pembayaran. Status di halaman ini akan <strong style="color:var(--navy);">otomatis diperbarui</strong>.</span>
                         </div>
                     </div>
-                    <div style="margin-top:1rem;padding:.65rem .85rem;background:var(--volt-dim);border:1px solid var(--volt-border);border-radius:6px;font-size:.75rem;color:var(--volt);display:flex;align-items:center;gap:.5rem;">
-                        <i class="fa-solid fa-clock"></i>
+                    <div style="margin-top:1.25rem;padding:.75rem 1rem;background:var(--navy-dim);border:1px solid rgba(15,32,68,.15);border-radius:8px;font-size:.78rem;color:var(--navy);display:flex;align-items:center;gap:.6rem;">
+                        <i class="fa-solid fa-clock" style="font-size:1rem;"></i>
                         <span>QR berlaku <strong><?= ceil($remaining / 60) ?> menit</strong> lagi. Jangan tutup halaman ini!</span>
                     </div>
                 </div>
@@ -544,18 +548,18 @@
     </div><!-- /grid -->
 
     <!-- Bottom link -->
-    <div style="text-align:center;margin-top:2rem;font-size:.8rem;color:var(--text-muted);">
+    <div style="text-align:center;margin-top:2.5rem;font-size:.85rem;color:var(--text-muted);">
         Ada masalah?
         <a href="<?= site_url('cek-status?kode=' . esc($booking['booking_code'])) ?>"
-           style="color:var(--volt);font-weight:600;">Cek Status Booking</a>
+           style="color:var(--navy);font-weight:700;text-decoration:underline;">Cek Status Booking</a>
     </div>
 
 </div><!-- /payment-wrap -->
 
 <footer class="footer">
     <p>
-        <i class="fa-solid fa-table-tennis-paddle-ball" style="color:var(--volt);margin-right:.3rem;"></i>
-        <strong style="color:var(--volt);">Tap4Smash</strong> GOR Sport Center &copy; <?= date('Y') ?>
+        <i class="fa-solid fa-table-tennis-paddle-ball" style="color:var(--navy);margin-right:.3rem;"></i>
+        <strong style="color:var(--navy);">Tap4Smash</strong> GOR Sport Center &copy; <?= date('Y') ?>
     </p>
 </footer>
 

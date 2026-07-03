@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking Lapangan — Tap4Smash</title>
+    <link rel="icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= base_url('css/user.css') ?>">
 
@@ -38,16 +40,16 @@
         padding: .75rem 1rem;
         border: 2px solid var(--border);
         border-radius: 12px;
-        background: var(--charcoal);
+        background: var(--surface);
         cursor: pointer;
         transition: all .2s;
         min-width: 70px;
         user-select: none;
     }
-    .date-pill:hover:not(.active) { border-color: var(--volt-border); }
+    .date-pill:hover:not(.active) { border-color: var(--navy-light); }
     .date-pill.active {
-        background: var(--volt);
-        border-color: var(--volt);
+        background: var(--navy);
+        border-color: var(--navy);
         transform: scale(1.05);
     }
     .date-pill .day-name {
@@ -57,20 +59,20 @@
         letter-spacing: .1em;
         color: var(--text-muted);
     }
-    .date-pill.active .day-name { color: rgba(0,0,0,.65); }
+    .date-pill.active .day-name { color: rgba(255,255,255,.7); }
     .date-pill .day-num {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 900;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
         font-size: 1.5rem;
         line-height: 1;
-        color: var(--text);
+        color: var(--navy);
     }
-    .date-pill.active .day-num { color: #000; }
-    /* TODAY label: putih biasa, baru volt saat active */
-    .date-pill.today-pill .day-name { color: var(--text-muted); }
-    .date-pill.today-pill.active .day-name { color: rgba(0,0,0,.65); }
+    .date-pill.active .day-num { color: #fff; }
+    /* TODAY label */
+    .date-pill.today-pill .day-name { color: var(--navy); }
+    .date-pill.today-pill.active .day-name { color: var(--accent); }
 
-    /* Kotak Pilih Bulan Ini */
+    /* Kotak Pilih Bulan Ini (Tanggal Lain) */
     .month-picker-pill {
         flex-shrink: 0;
         display: flex;
@@ -79,22 +81,20 @@
         justify-content: center;
         gap: .3rem;
         padding: .75rem 1rem;
-        border: 2px dashed var(--volt-border);
+        border: 2px solid var(--border);
         border-radius: 12px;
-        background: var(--volt-dim, rgba(204,255,0,.07));
+        background: var(--surface);
         cursor: pointer;
         transition: all .2s;
         min-width: 70px;
         user-select: none;
-        color: var(--volt);
+        color: var(--navy);
     }
     .month-picker-pill:hover {
-        background: rgba(204,255,0,.15);
-        border-color: var(--volt);
-        transform: scale(1.05);
+        border-color: var(--navy-light);
     }
     .month-picker-pill .mp-icon { font-size: 1.3rem; }
-    .month-picker-pill .mp-label { font-size: .6rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .month-picker-pill .mp-label { font-size: .6rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-family: 'Inter', sans-serif; }
 
     /* Modal Kalender */
     .cal-modal-overlay {
@@ -129,8 +129,8 @@
         margin-bottom: 1.25rem;
     }
     .cal-title {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 900;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
         font-size: 1.1rem;
         text-transform: uppercase;
         color: var(--volt);
@@ -224,8 +224,8 @@
     .court-card.active .court-type,
     .court-card.active .court-price { color: rgba(0,0,0,0.7); }
     .court-name {
-        font-weight: 900;
-        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-family: 'Oswald', sans-serif;
         font-size: 1.2rem;
         margin-bottom: .25rem;
     }
@@ -237,9 +237,9 @@
     .court-price {
         font-size: 1rem;
         font-weight: 700;
-        color: var(--volt);
+        color: var(--navy);
     }
-    .court-card.active .court-price { color: #000; }
+    .court-card.active .court-price { color: var(--navy); }
 
     /* Slot Card Grid */
     .slot-card-grid {
@@ -282,12 +282,32 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        font-family: 'Montserrat', sans-serif;
+        font-family: 'Oswald', sans-serif;
         font-size: .6rem;
-        font-weight: 900;
+        font-weight: 700;
         letter-spacing: .15em;
         color: var(--text-muted);
         background: rgba(0,0,0,.6);
+    }
+    .slot-card.slot-passed {
+        opacity: .35;
+        cursor: not-allowed;
+        background: rgba(0,0,0,.3);
+    }
+    .slot-card.slot-passed .slot-time { text-decoration: line-through; }
+    .slot-card.slot-passed::after {
+        content: 'LEWAT';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Oswald', sans-serif;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .15em;
+        color: var(--text-muted);
+        background: rgba(0,0,0,.65);
     }
     
     /* Checkbox selected style */
@@ -301,8 +321,8 @@
     .slot-card.slot-selected .slot-type-label { color: rgba(0,0,0,.7); }
 
     .slot-time {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 800;
+        font-family: 'Oswald', sans-serif;
+        font-weight: 700;
         font-size: .82rem;
         color: var(--text);
         margin-bottom: .2rem;
@@ -317,52 +337,75 @@
     /* Wizard Steps */
     .wizard-steps {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        margin-bottom: 2rem;
-        background: var(--surface2);
-        padding: 1rem 1.5rem;
-        border-radius: 12px;
-        border: 1px solid var(--border);
+        margin: 0 auto 2.5rem auto;
+        max-width: 750px;
+        padding: 0 1rem;
+        background: transparent;
+        border: none;
+        position: relative;
+        z-index: 1;
     }
     .wizard-step {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: .5rem;
+        gap: 0.6rem;
         color: var(--text-muted);
         transition: all 0.3s;
-        opacity: 0.5;
+        opacity: 0.6;
+        text-align: center;
+        width: 130px;
+        flex-shrink: 0;
+        position: relative;
     }
     .wizard-step.active {
-        color: var(--volt);
+        color: var(--navy);
         opacity: 1;
     }
     .wizard-step .step-num {
-        width: 30px; height: 30px;
+        width: 38px; height: 38px;
         border-radius: 50%;
-        background: var(--charcoal);
+        background: var(--surface);
         border: 2px solid var(--border);
         display: flex;
         align-items: center;
         justify-content: center;
         font-weight: 800;
-        font-size: .85rem;
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        transition: all 0.3s;
+        position: relative;
+        z-index: 2;
+        box-shadow: 0 0 0 4px var(--bg);
     }
     .wizard-step.active .step-num {
         background: var(--volt);
         color: #000;
         border-color: var(--volt);
+        box-shadow: 0 0 0 4px var(--bg), 0 0 15px rgba(170,238,0,0.4);
     }
-    .wizard-step .step-text { font-size: .85rem; font-weight: 700; }
+    .wizard-step .step-text {
+        font-size: 0.82rem;
+        font-weight: 700;
+        line-height: 1.3;
+        letter-spacing: 0.02em;
+    }
     .wizard-line {
-        flex: 1; height: 2px;
+        flex: 1;
+        height: 2px;
         background: var(--border);
-        margin: 0 1rem;
+        margin: 18px -35px 0 -35px;
+        position: relative;
+        z-index: 1;
     }
     @media (max-width: 600px) {
-        .wizard-steps { padding: .75rem; }
-        .wizard-step .step-text { display: none; }
-        .wizard-line { margin: 0 .5rem; }
+        .wizard-steps { margin-bottom: 2rem; padding: 0; }
+        .wizard-step { width: 75px; gap: 0.4rem; }
+        .wizard-step .step-num { width: 32px; height: 32px; font-size: 0.85rem; }
+        .wizard-step .step-text { font-size: 0.65rem; }
+        .wizard-line { margin: 15px -18px 0 -18px; }
     }
 
     .wizard-content { display: none; animation: fadeIn 0.3s ease-in-out; }
@@ -385,11 +428,11 @@
         transition: all .2s;
         border: none;
     }
-    .btn-next { background: var(--volt); color: #000; }
-    .btn-next:hover:not(:disabled) { background: #b3e600; transform: translateY(-2px); }
-    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    .btn-prev { background: var(--charcoal); color: var(--text); border: 1px solid var(--border); }
-    .btn-prev:hover { background: var(--surface2); border-color: var(--text-muted); }
+    .btn-next { background: var(--accent, #AAEE00); color: #000; }
+    .btn-next:hover:not(:disabled) { background: var(--accent-dark, #88CC00); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(170,238,0,.3); }
+    .btn-next:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+    .btn-prev { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+    .btn-prev:hover { background: var(--border); color: var(--navy); }
 
     /* Review Card styling */
     .review-wrapper {
@@ -402,14 +445,14 @@
 
 <nav class="navbar">
     <div class="navbar-brand">
-        <span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
-        <h1><a href="<?= site_url('/') ?>" style="color:inherit;">Tap4Smash <span>GOR Sport Center</span></a></h1>
+        <?php $__logoExts=['png','jpg','jpeg','webp']; $__logo=null; foreach($__logoExts as $__e){if(file_exists(FCPATH.'img/logo.'.$__e)){$__logo=base_url('img/logo.'.$__e).'?v='.filemtime(FCPATH.'img/logo.'.$__e);break;}} ?>
+        <?php if($__logo): ?><a href="<?= site_url('/') ?>"><img src="<?= $__logo ?>" alt="Tap4Smash" style="height:38px;width:auto;"></a><?php else: ?><a href="<?= site_url('/') ?>" style="color:inherit;"><span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span></a><?php endif; ?>
     </div>
 </nav>
 
 <div class="section" style="padding-top:2rem;">
     <div style="margin-bottom:2rem; text-align: center;">
-        <h2 style="font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.8rem;text-transform:uppercase; color:var(--volt);">
+        <h2 style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.8rem;text-transform:uppercase; color:var(--volt);">
             Booking Lapangan
         </h2>
         <p style="color:var(--text-muted);font-size:.9rem;margin-top:.5rem;">
@@ -621,7 +664,7 @@
                         </div>
                         <div class="summary-row">
                             <span class="lbl">Jam Main</span>
-                            <span class="val" id="sum-jam" style="color:var(--volt); font-weight:700;">—</span>
+                            <span class="val" id="sum-jam" style="color:var(--navy); font-weight:700;">—</span>
                         </div>
                         <div class="summary-row">
                             <span class="lbl">Durasi</span>
@@ -629,7 +672,7 @@
                         </div>
                         <div class="summary-row">
                             <span class="lbl">Harga / Jam</span>
-                            <span class="val" id="sum-harga-jam">—</span>
+                            <span class="val" id="sum-harga-jam" style="color:var(--navy); font-weight:700;">—</span>
                         </div>
                         <hr class="summary-divider">
                         <div class="summary-row" style="margin-bottom:.5rem;">
@@ -743,7 +786,38 @@ function selectDate(ymd) {
     selectedDate = ymd;
     document.getElementById('tanggal_main').value = ymd;
     document.querySelectorAll('.date-pill').forEach(p => p.classList.remove('active'));
-    document.getElementById('date-' + ymd).classList.add('active');
+    
+    let targetPill = document.getElementById('date-' + ymd);
+    if (!targetPill) {
+        const oldCustom = document.querySelector('.date-pill[data-custom="true"]');
+        if (oldCustom) oldCustom.remove();
+        
+        const dateObj = new Date(ymd + 'T00:00:00');
+        const daysArr = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        const dayNm = daysArr[dateObj.getDay()];
+        const dayN  = String(dateObj.getDate()).padStart(2, '0');
+        
+        const pill = document.createElement('div');
+        pill.className = 'date-pill';
+        pill.setAttribute('data-date', ymd);
+        pill.setAttribute('data-custom', 'true');
+        pill.id = 'date-' + ymd;
+        pill.onclick = () => selectDate(ymd);
+        pill.innerHTML = `<span class="day-name">${dayNm}</span><span class="day-num">${dayN}</span>`;
+        
+        const monthPicker = document.querySelector('.month-picker-pill');
+        if (monthPicker) {
+            monthPicker.parentNode.insertBefore(pill, monthPicker);
+        } else {
+            document.getElementById('dateStrip').appendChild(pill);
+        }
+        targetPill = pill;
+    }
+    
+    if (targetPill) {
+        targetPill.classList.add('active');
+        targetPill.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    }
     
     // Clear slots
     selectedSlots = [];
@@ -781,6 +855,13 @@ async function fetchSlots() {
         takenSlots = data.slots || [];
     } catch (e) { takenSlots = []; }
 
+    const now = new Date();
+    const todayYMD = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    if (selectedDate === todayYMD) {
+        selectedSlots = selectedSlots.filter(h => h > now.getHours());
+        document.getElementById('jam_main').value = selectedSlots.join(',');
+    }
+
     renderSlotGrid();
 }
 
@@ -790,13 +871,20 @@ function renderSlotGrid() {
     
     document.getElementById('step2-title').textContent = `Pilih Jam Main (${formatDateLong(selectedDate)})`;
 
+    const now = new Date();
+    const todayYMD = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    const isToday = (selectedDate === todayYMD);
+    const currentHour = now.getHours();
+
     SLOT_HOURS.forEach(h => {
-        const taken = takenSlots.includes(h);
-        const sel   = selectedSlots.includes(h);
+        const isPassed = isToday && (h <= currentHour);
+        const taken    = takenSlots.includes(h) && !isPassed;
+        const sel      = selectedSlots.includes(h) && !isPassed;
 
         let classes = 'slot-card';
-        if (taken) classes += ' slot-taken';
-        if (sel)   classes += ' slot-selected';
+        if (taken)         classes += ' slot-taken';
+        else if (isPassed) classes += ' slot-passed';
+        else if (sel)      classes += ' slot-selected';
 
         const time = `${pad(h)}:00 - ${pad(h + 1)}:00`;
 
@@ -807,7 +895,7 @@ function renderSlotGrid() {
             <div class="slot-type-label">Standard</div>
         `;
 
-        if (!taken) {
+        if (!taken && !isPassed) {
             card.addEventListener('click', () => toggleSlot(h));
         }
 
@@ -817,6 +905,9 @@ function renderSlotGrid() {
 
 function toggleSlot(h) {
     if (takenSlots.includes(h)) return;
+    const now = new Date();
+    const todayYMD = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+    if (selectedDate === todayYMD && h <= now.getHours()) return;
     
     const idx = selectedSlots.indexOf(h);
     if (idx > -1) {

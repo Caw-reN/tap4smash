@@ -1,38 +1,97 @@
 <?php $this->extend('admin/layouts/main') ?>
 <?php $this->section('content') ?>
 
-<!-- Stats Grid -->
-<div class="stats-grid">
-    <div class="stat-card volt">
-        <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
-        <div class="stat-value"><?= $total_booking_hari ?></div>
-        <div class="stat-label">Booking Hari Ini</div>
+<!-- Stats Dashboard — Hierarchical Layout -->
+
+<!-- ═══ TIER 1: Hero Cards — KPI Utama Harian ═══ -->
+<div class="stats-hero-row">
+
+    <div class="stat-card stat-hero green">
+        <div class="stat-hero-bg-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+        <div class="stat-top">
+            <div class="stat-label stat-label-lg">Pemasukan Hari Ini</div>
+            <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
+        </div>
+        <div class="stat-value stat-hero-value">Rp <?= number_format($total_revenue_hari, 0, ',', '.') ?></div>
+        <div class="stat-hero-sub">Total pendapatan yang masuk hari ini</div>
     </div>
-    
-    <div class="stat-card green">
-        <div class="stat-icon"><i class="fa-solid fa-money-bill-wave"></i></div>
-        <div class="stat-value">Rp <?= number_format($total_revenue_hari, 0, ',', '.') ?></div>
-        <div class="stat-label">Pemasukan Hari Ini</div>
+
+    <div class="stat-card stat-hero volt">
+        <div class="stat-hero-bg-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        <div class="stat-top">
+            <div class="stat-label stat-label-lg">Booking Hari Ini</div>
+            <div class="stat-icon"><i class="fa-solid fa-calendar-day"></i></div>
+        </div>
+        <div class="stat-value stat-hero-value"><?= $total_booking_hari ?></div>
+        <div class="stat-hero-sub">Reservasi terkonfirmasi untuk hari ini</div>
     </div>
-    
-    <div class="stat-card yellow">
-        <div class="stat-icon"><i class="fa-solid fa-credit-card"></i></div>
-        <div class="stat-value"><?= $pending_pelunasan ?></div>
-        <div class="stat-label">Menunggu Pelunasan</div>
-    </div>
-    
-    <div class="stat-card blue">
-        <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
-        <div class="stat-value"><?= $pending_payment ?></div>
-        <div class="stat-label">Pending Pembayaran</div>
-    </div>
-    
-    <div class="stat-card volt">
-        <div class="stat-icon"><i class="fa-solid fa-building"></i></div>
-        <div class="stat-value"><?= $total_lapangan ?></div>
-        <div class="stat-label">Total Lapangan</div>
-    </div>
+
 </div>
+
+<!-- ═══ TIER 2: Alert Cards — Perlu Tindakan ═══ -->
+<div class="stats-alert-row">
+
+    <div class="stat-card stat-alert yellow">
+        <div class="stat-top">
+            <div class="stat-label stat-label-md">Menunggu Pelunasan</div>
+            <div class="stat-icon"><i class="fa-solid fa-credit-card"></i></div>
+        </div>
+        <div class="stat-value stat-alert-value"><?= $pending_pelunasan ?></div>
+        <div class="stat-alert-tag"><i class="fa-solid fa-triangle-exclamation"></i> Perlu ditindaklanjuti</div>
+    </div>
+
+    <div class="stat-card stat-alert blue">
+        <div class="stat-top">
+            <div class="stat-label stat-label-md">Pending Pembayaran</div>
+            <div class="stat-icon"><i class="fa-solid fa-hourglass-half"></i></div>
+        </div>
+        <div class="stat-value stat-alert-value"><?= $pending_payment ?></div>
+        <div class="stat-alert-tag"><i class="fa-solid fa-clock"></i> Menunggu konfirmasi</div>
+    </div>
+
+    <div class="stat-card stat-alert navy">
+        <div class="stat-top">
+            <div class="stat-label stat-label-md">Check-in Hari Ini</div>
+            <div class="stat-icon"><i class="fa-solid fa-door-open"></i></div>
+        </div>
+        <div class="stat-value stat-alert-value"><?= $checkin_hari ?></div>
+        <div class="stat-alert-tag"><i class="fa-solid fa-check-circle"></i> Sudah masuk GOR</div>
+    </div>
+
+</div>
+
+<!-- ═══ TIER 3: Info Cards — Data Rekap & Statis ═══ -->
+<div class="stats-info-row">
+
+    <div class="stat-card stat-info green">
+        <div class="stat-top">
+            <div class="stat-label stat-label-sm">Revenue Bulan Ini</div>
+            <div class="stat-icon stat-icon-sm"><i class="fa-solid fa-chart-line"></i></div>
+        </div>
+        <div class="stat-value stat-info-value">Rp <?= number_format($revenue_bulan, 0, ',', '.') ?></div>
+        <div class="stat-info-sub"><?= date('F Y') ?></div>
+    </div>
+
+    <div class="stat-card stat-info volt">
+        <div class="stat-top">
+            <div class="stat-label stat-label-sm">Booking Bulan Ini</div>
+            <div class="stat-icon stat-icon-sm"><i class="fa-solid fa-calendar-check"></i></div>
+        </div>
+        <div class="stat-value stat-info-value"><?= $total_booking_bulan ?></div>
+        <div class="stat-info-sub">transaksi sukses bulan ini</div>
+    </div>
+
+    <div class="stat-card stat-info navy">
+        <div class="stat-top">
+            <div class="stat-label stat-label-sm">Total Lapangan</div>
+            <div class="stat-icon stat-icon-sm"><i class="fa-solid fa-building"></i></div>
+        </div>
+        <div class="stat-value stat-info-value"><?= $total_lapangan ?></div>
+        <div class="stat-info-sub">lapangan terdaftar</div>
+    </div>
+
+</div>
+
 
 <!-- Shortcut Actions -->
 <div style="display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap;">

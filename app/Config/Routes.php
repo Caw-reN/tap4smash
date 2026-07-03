@@ -65,6 +65,8 @@ $routes->group('admin', function ($routes) {
     $routes->post('whatsapp/logout', 'Admin\WhatsAppController::logout');
 
     // Settings
-    $routes->get('settings',        'Admin\SettingController::index');
-    $routes->post('settings/update', 'Admin\SettingController::update');
+    $routes->get('settings',               'Admin\SettingController::index');
+    $routes->post('settings/update',       'Admin\SettingController::update');
+    $routes->post('settings/update-maps',  'Admin\SettingController::updateMaps');
+    $routes->post('settings/upload-logo',  'Admin\SettingController::uploadLogo');
 });

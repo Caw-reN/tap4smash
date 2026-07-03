@@ -123,7 +123,7 @@
     .confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; align-items:center; justify-content:center; }
     .confirm-overlay.open { display:flex; }
     .confirm-box { background:#1F2937; border:1px solid #374151; border-top:3px solid #EF4444; padding:2rem; max-width:380px; width:90%; }
-    .confirm-box h3 { font-family:'Montserrat',sans-serif; font-weight:900; text-transform:uppercase; font-size:.9rem; margin-bottom:.75rem; display:flex; align-items:center; gap:.5rem; }
+    .confirm-box h3 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:.9rem; margin-bottom:.75rem; display:flex; align-items:center; gap:.5rem; }
     .confirm-box p { font-size:.82rem; color:#9CA3AF; margin-bottom:1.5rem; }
     .confirm-actions { display:flex; gap:.75rem; }
 </style>

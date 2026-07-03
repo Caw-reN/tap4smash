@@ -27,10 +27,14 @@ class Home extends BaseController
     /** Landing Page (F-01) */
     public function index(): string
     {
-        $lapangans = $this->lapanganModel->getActive();
+        $lapangans    = $this->lapanganModel->getActive();
+        $settingModel = new \App\Models\SettingModel();
 
         return view('user/home', [
-            'lapangans' => $lapangans,
+            'lapangans'     => $lapangans,
+            'maps_embed_url' => $settingModel->getValue('maps_embed_url', ''),
+            'maps_label'     => $settingModel->getValue('maps_label', 'GOR Tap4Smash'),
+            'maps_address'   => $settingModel->getValue('maps_address', ''),
         ]);
     }
 
@@ -159,6 +163,16 @@ class Home extends BaseController
         if ($durasiJam < 1) {
             return redirect()->back()->withInput()
                 ->with('errors', ['jam_main' => 'Pilih minimal 1 slot jam.']);
+        }
+
+        if ($tanggalMain === date('Y-m-d')) {
+            $currentHour = (int) date('G');
+            foreach ($slots as $s) {
+                if ($s <= $currentHour) {
+                    return redirect()->back()->withInput()
+                        ->with('errors', ['jam_main' => 'Slot waktu jam ' . sprintf('%02d:00', $s) . ' sudah terlewat. Pilih jam main yang belum lewat.']);
+                }
+            }
         }
 
         // F-04: Hitung skema pembayaran

@@ -14,48 +14,50 @@
         .wa-card {
             width: 100%;
             max-width: 480px;
-            background: var(--slate-dark);
-            border: 1px solid var(--slate);
-            border-radius: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
             overflow: hidden;
+            box-shadow: var(--shadow-md);
         }
 
         .card-header {
-            background: var(--charcoal);
-            border-bottom: 2px solid var(--volt);
-            padding: 1.5rem 2rem;
+            background: var(--navy);
+            border-bottom: 3px solid var(--accent);
+            padding: 1.25rem 1.75rem;
             display: flex;
             align-items: center;
             gap: 1rem;
         }
 
         .card-header .icon {
-            font-size: 2rem;
+            font-size: 1.8rem;
             line-height: 1;
-            color: var(--volt);
+            color: var(--accent);
         }
 
         .card-header h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.1rem;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
             color: #fff;
             line-height: 1.2;
         }
 
         .card-header h1 span {
             display: block;
-            font-size: 0.7rem;
-            font-weight: 500;
-            color: var(--volt);
-            letter-spacing: 0.15em;
+            font-size: 0.58rem;
+            font-weight: 600;
+            color: rgba(255,255,255,.45);
+            letter-spacing: 0.22em;
             font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
         }
 
         .card-body {
-            padding: 2rem;
+            padding: 1.75rem;
         }
 
         /* ── Status Badge ─────────────────────────────────────── */
@@ -63,103 +65,100 @@
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 1rem 1.25rem;
-            border: 1px solid var(--slate);
-            background: var(--charcoal);
-            margin-bottom: 1.75rem;
-            border-radius: 6px;
+            padding: 0.85rem 1.1rem;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius);
         }
 
         .status-dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             flex-shrink: 0;
         }
 
-        .status-dot.connected   { background: var(--green);  box-shadow: 0 0 8px var(--green); animation: pulse-green 2s infinite; }
-        .status-dot.scanning    { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); animation: pulse-yellow 1s infinite; }
-        .status-dot.offline     { background: var(--red);    box-shadow: 0 0 8px var(--red); }
-        .status-dot.loading     { background: var(--slate);  }
+        .status-dot.connected { background: var(--green);  box-shadow: 0 0 7px var(--green);  animation: pulse-green 2s infinite; }
+        .status-dot.scanning  { background: var(--yellow); box-shadow: 0 0 7px var(--yellow); animation: pulse-yellow 1s infinite; }
+        .status-dot.offline   { background: var(--red);    box-shadow: 0 0 7px var(--red); }
+        .status-dot.loading   { background: var(--border-dark); }
 
         @keyframes pulse-green  { 0%,100%{opacity:1} 50%{opacity:.4} }
         @keyframes pulse-yellow { 0%,100%{opacity:1} 50%{opacity:.3} }
 
         .status-text {
-            font-size: 0.875rem;
+            font-size: 0.83rem;
             font-weight: 500;
-            color: #E5E7EB;
+            color: var(--text-mid);
             flex: 1;
         }
 
         .status-badge {
-            font-family: 'Montserrat', sans-serif;
+            font-family: 'Oswald', sans-serif;
             font-weight: 700;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             text-transform: uppercase;
             letter-spacing: 0.1em;
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
+            padding: 0.18rem 0.55rem;
+            border-radius: var(--radius-sm);
         }
 
-        .badge-connected { background: rgba(34,197,94,.15); color: var(--green); border: 1px solid rgba(34,197,94,.3); }
-        .badge-scanning  { background: rgba(245,158,11,.15); color: var(--yellow); border: 1px solid rgba(245,158,11,.3); }
-        .badge-offline   { background: rgba(239,68,68,.15); color: var(--red); border: 1px solid rgba(239,68,68,.3); }
+        .badge-connected { background: var(--green-dim);  color: var(--green);  border: 1px solid rgba(22,163,74,.3); }
+        .badge-scanning  { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(217,119,6,.3); }
+        .badge-offline   { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(220,38,38,.3); }
 
         /* ── Phone Number ─────────────────────────────────────── */
         .phone-info {
             display: none;
             align-items: center;
             gap: 0.5rem;
-            margin-bottom: 1.75rem;
-            padding: 0.875rem 1.25rem;
-            background: rgba(204,255,0,.05);
-            border: 1px solid rgba(204,255,0,.2);
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1.1rem;
+            background: var(--accent-dim);
+            border: 1px solid rgba(170,238,0,.3);
             font-size: 0.85rem;
-            color: var(--volt);
-            font-weight: 600;
-            border-radius: 6px;
+            color: var(--accent-text);
+            font-weight: 700;
+            font-family: 'Oswald', sans-serif;
+            letter-spacing: 0.04em;
+            border-radius: var(--radius);
         }
 
         /* ── QR Section ───────────────────────────────────────── */
-        .qr-section {
-            text-align: center;
-        }
+        .qr-section { text-align: center; }
 
         .qr-label {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.68rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.15em;
+            letter-spacing: 0.18em;
             color: var(--text-muted);
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.1rem;
         }
 
         .qr-box {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 284px;
-            height: 284px;
+            width: 260px;
+            height: 260px;
             background: #fff;
-            padding: 0;
+            border: 1px solid var(--border);
             position: relative;
-            margin-bottom: 1.25rem;
-            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-radius: var(--radius);
             overflow: hidden;
+            box-shadow: var(--shadow-sm);
         }
 
-        .qr-box img {
-            width: 280px;
-            height: 280px;
-            display: block;
-        }
+        .qr-box img { width: 256px; height: 256px; display: block; }
 
         .qr-box .qr-overlay {
             position: absolute;
             inset: 0;
-            background: rgba(17,24,39,.85);
+            background: rgba(15,32,68,.88);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -168,10 +167,10 @@
         }
 
         .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid var(--slate);
-            border-top-color: var(--volt);
+            width: 34px;
+            height: 34px;
+            border: 3px solid rgba(255,255,255,.15);
+            border-top-color: var(--accent);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -181,8 +180,9 @@
         .qr-hint {
             font-size: 0.75rem;
             color: var(--text-muted);
-            line-height: 1.5;
-            max-width: 240px;
+            line-height: 1.6;
+            max-width: 260px;
+            margin: 0 auto;
         }
 
         .qr-timer {
@@ -192,11 +192,11 @@
             gap: 0.4rem;
             font-size: 0.75rem;
             color: var(--text-muted);
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
         }
 
         .qr-timer span {
-            color: var(--volt);
+            color: var(--navy);
             font-weight: 700;
             font-variant-numeric: tabular-nums;
             min-width: 20px;
@@ -208,31 +208,40 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            gap: 1rem;
-            padding: 2.5rem 0;
+            gap: 0.85rem;
+            padding: 2rem 0;
         }
 
         .connected-state .check-icon {
-            font-size: 3.5rem;
-            animation: pop-in .4s ease;
+            width: 64px;
+            height: 64px;
+            background: var(--green-dim);
+            border: 2px solid rgba(22,163,74,.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
             color: var(--green);
+            animation: pop-in .4s ease;
         }
 
         @keyframes pop-in { from{transform:scale(.5);opacity:0} to{transform:scale(1);opacity:1} }
 
         .connected-state h2 {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 1.25rem;
+            font-family: 'Oswald', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.06em;
             color: var(--green);
         }
 
         .connected-state p {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             text-align: center;
+            line-height: 1.6;
         }
 
         /* ── Offline / Error State ────────────────────────────── */
@@ -245,10 +254,21 @@
             text-align: center;
         }
 
-        .offline-state .error-icon { font-size: 2.5rem; color: var(--red); }
+        .offline-state .error-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--red-dim);
+            border: 2px solid rgba(220,38,38,.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--red);
+        }
 
         .offline-state p {
-            font-size: 0.8rem;
+            font-size: 0.82rem;
             color: var(--text-muted);
             max-width: 300px;
             line-height: 1.6;
@@ -256,23 +276,24 @@
 
         .offline-state code {
             display: inline-block;
-            background: var(--charcoal);
-            border: 1px solid var(--slate);
-            padding: 0.3rem 0.6rem;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            padding: 0.3rem 0.7rem;
             font-size: 0.75rem;
-            color: var(--volt);
-            font-family: 'Courier New', monospace;
-            margin-top: 0.5rem;
-            border-radius: 4px;
+            color: var(--navy-mid);
+            font-family: 'Inter', monospace;
+            margin-top: 0.4rem;
+            border-radius: var(--radius-sm);
         }
 
         /* ── Footer ───────────────────────────────────────────── */
         .card-footer {
-            border-top: 1px solid var(--slate);
-            padding: 1rem 2rem;
+            border-top: 1px solid var(--border);
+            padding: 0.85rem 1.75rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: var(--surface2);
         }
 
         .btn-refresh {
@@ -280,31 +301,35 @@
             align-items: center;
             gap: 0.4rem;
             background: transparent;
-            border: 1px solid var(--slate);
+            border: 1px solid var(--border-dark);
             color: var(--text-muted);
-            font-family: 'Inter', sans-serif;
-            font-size: 0.75rem;
-            padding: 0.45rem 0.9rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.4rem 0.85rem;
             cursor: pointer;
             transition: all 0.15s;
-            border-radius: 6px;
+            border-radius: var(--radius);
         }
 
         .btn-refresh:hover {
-            border-color: var(--volt);
-            color: var(--volt);
+            border-color: var(--navy);
+            color: var(--navy);
+            background: var(--navy-dim);
         }
 
         .auto-refresh-info {
             font-size: 0.7rem;
-            color: var(--slate);
+            color: var(--text-muted);
         }
 
         .auto-refresh-info span {
-            color: var(--text-muted);
+            color: var(--navy);
+            font-weight: 600;
         }
     </style>
-</style>
 
 <div class="wa-status-wrapper">
 <div class="wa-card">

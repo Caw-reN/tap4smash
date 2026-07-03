@@ -12,13 +12,7 @@
 </div>
 <?php endif; ?>
 
-<div style="margin-bottom:1.25rem;padding:1rem 1.25rem;background:var(--yellow-dim,rgba(245,158,11,.12));border:1px solid rgba(245,158,11,.3);border-left:3px solid var(--yellow,#F59E0B);font-size:.82rem;color:#FDE68A;display:flex;gap:.6rem;align-items:flex-start;border-radius:6px;">
-    <i class="fa-solid fa-triangle-exclamation" style="margin-top:2px;flex-shrink:0;"></i>
-    <span>
-        Pelanggan yang memilih <strong>DP 50%</strong> wajib melunasi sisa tagihan di kasir GOR sebelum bermain.
-        Klik <strong>"Lunasi di Tempat"</strong> setelah menerima pembayaran tunai.
-    </span>
-</div>
+
 
 <div class="table-card">
     <div class="table-card-header">
@@ -85,24 +79,26 @@
     <div class="confirm-box">
         <h3><i class="fa-solid fa-bolt"></i> Konfirmasi Pelunasan</h3>
         <p id="confirmMsg">Yakin tandai booking ini sebagai lunas?</p>
-        <div class="confirm-actions">
-            <form id="lunasiForm" method="post" action="">
+        <div class="confirm-actions" style="display: flex; gap: .75rem; justify-content: center;">
+            <form id="lunasiForm" method="post" action="" style="flex: 1.4; margin: 0;">
                 <?= csrf_field() ?>
-                <button type="submit" class="btn btn-green">
-                    <i class="fa-solid fa-check"></i> Ya, Tandai Lunas
+                <button type="submit" class="btn btn-green" style="width: 100%; white-space: nowrap; justify-content: center;">
+                    <i class="fa-solid fa-circle-check" style="font-size: 1.05rem;"></i> TANDAI LUNAS
                 </button>
             </form>
-            <button type="button" class="btn btn-outline" onclick="closeConfirm()">Batal</button>
+            <button type="button" class="btn btn-outline" onclick="closeConfirm()" style="flex: 0.8; white-space: nowrap; justify-content: center;">
+                <i class="fa-solid fa-xmark" style="font-size: 1.05rem;"></i> BATAL
+            </button>
         </div>
     </div>
 </div>
 
 <style>
-    .confirm-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:200; align-items:center; justify-content:center; }
+    .confirm-overlay { display:none; position:fixed; inset:0; background:rgba(15,32,68,.45); z-index:200; align-items:center; justify-content:center; backdrop-filter:blur(2px); }
     .confirm-overlay.open { display:flex; }
-    .confirm-box { background:#1F2937; border:1px solid #374151; border-top:3px solid #22C55E; padding:2rem; max-width:380px; width:90%; }
-    .confirm-box h3 { font-family:'Montserrat',sans-serif; font-weight:900; text-transform:uppercase; font-size:.9rem; margin-bottom:.75rem; display:flex; align-items:center; gap:.5rem; }
-    .confirm-box p { font-size:.82rem; color:#9CA3AF; margin-bottom:1.5rem; }
+    .confirm-box { background:var(--surface); border:1px solid var(--border); padding:2rem; max-width:380px; width:90%; border-radius:var(--radius); box-shadow:var(--shadow-lg); }
+    .confirm-box h3 { font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; font-size:.95rem; margin-bottom:.75rem; color:var(--navy); display:flex; align-items:center; gap:.5rem; }
+    .confirm-box p { font-size:.82rem; color:var(--text-muted); margin-bottom:1.5rem; }
     .confirm-actions { display:flex; gap:.75rem; }
 </style>
 

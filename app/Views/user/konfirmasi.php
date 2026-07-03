@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Konfirmasi Booking <?= esc($booking['booking_code']) ?> — Tap4Smash</title>
+    <link rel="icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
+    <link rel="shortcut icon" type="image/png" href="<?= base_url('favicon.png') ?>?v=<?= filemtime(FCPATH.'favicon.png') ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
     <link rel="stylesheet" href="<?= base_url('css/user.css') ?>">
 </head>
@@ -14,8 +16,8 @@
 
 <nav class="navbar">
     <div class="navbar-brand">
-        <span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span>
-        <h1><a href="<?= site_url('/') ?>" style="color:inherit;">Tap4Smash <span>GOR Sport Center</span></a></h1>
+        <?php $__logoExts=['png','jpg','jpeg','webp']; $__logo=null; foreach($__logoExts as $__e){if(file_exists(FCPATH.'img/logo.'.$__e)){$__logo=base_url('img/logo.'.$__e).'?v='.filemtime(FCPATH.'img/logo.'.$__e);break;}} ?>
+        <?php if($__logo): ?><a href="<?= site_url('/') ?>"><img src="<?= $__logo ?>" alt="Tap4Smash" style="height:38px;width:auto;"></a><?php else: ?><a href="<?= site_url('/') ?>" style="color:inherit;"><span class="brand-icon"><i class="fa-solid fa-table-tennis-paddle-ball"></i></span></a><?php endif; ?>
     </div>
 </nav>
 
@@ -150,7 +152,7 @@
             <i class="fa-solid fa-magnifying-glass"></i> Cek Status Booking
         </a>
         <a href="<?= site_url('booking') ?>"
-           style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;background:var(--volt);border-radius:var(--radius);font-size:.82rem;font-weight:700;color:#000;font-family:'Montserrat',sans-serif;transition:all .15s;"
+           style="display:inline-flex;align-items:center;gap:.5rem;padding:.7rem 1.25rem;background:var(--volt);border-radius:var(--radius);font-size:.82rem;font-weight:700;color:#000;font-family:'Oswald',sans-serif;transition:all .15s;"
            onmouseover="this.style.background='#b8e800'" onmouseout="this.style.background='var(--volt)'">
             <i class="fa-solid fa-plus"></i> Booking Lagi
         </a>

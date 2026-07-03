@@ -238,13 +238,31 @@ class BookingController extends BaseController
             return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Booking tidak ditemukan.']);
         }
 
+        // Sudah check-in sebelumnya (termasuk lewat webhook callback)
         if ($booking['is_checked_in']) {
-            return $this->response->setJSON(['success' => true, 'paid' => true, 'done' => true]);
+            return $this->response->setJSON([
+                'success' => true,
+                'paid'    => true,
+                'done'    => true,
+                'message' => 'Pembayaran QRIS terkonfirmasi. User berhasil check-in!',
+            ]);
         }
 
         $paymentKu = new PaymentKu();
-        $orderId   = $booking['booking_code'] . '-LNS';
-        $result    = $paymentKu->checkStatus($orderId);
+
+        // Gunakan payment_token (trx_id asli dari PaymentKu) jika tersimpan,
+        // fallback ke reference_id (booking_code-LNS) jika token belum ada.
+        $checkId = ! empty($booking['payment_token'])
+            ? $booking['payment_token']
+            : $booking['booking_code'] . '-LNS';
+
+        $result = $paymentKu->checkStatus($checkId);
+
+        log_message('debug', '[qrisCheckinStatus] booking_id={id} checkId={cid} status={s}', [
+            'id'  => $bookingId,
+            'cid' => $checkId,
+            's'   => $result['status'],
+        ]);
 
         if ($result['status'] === 'success') {
             $this->bookingModel->markAsCheckedIn($bookingId, 'qris');

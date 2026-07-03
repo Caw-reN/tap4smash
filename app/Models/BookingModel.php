@@ -180,6 +180,38 @@ class BookingModel extends Model
             ->countAllResults();
     }
 
+    /** Total pendapatan bulan ini (booking sukses, dihitung dari created_at) */
+    public function sumMonthRevenue(): float
+    {
+        $result = $this->db->table($this->table)
+            ->selectSum('jumlah_dibayar', 'total')
+            ->where('MONTH(created_at)', date('n'))
+            ->where('YEAR(created_at)', date('Y'))
+            ->where('status', 'success')
+            ->get()->getRow();
+
+        return (float) ($result->total ?? 0);
+    }
+
+    /** Jumlah booking yang sudah check-in hari ini */
+    public function countTodayCheckins(): int
+    {
+        return $this->where('tanggal_main', date('Y-m-d'))
+            ->where('is_checked_in', 1)
+            ->where('status', 'success')
+            ->countAllResults();
+    }
+
+    /** Total booking sukses bulan ini */
+    public function countMonthBookings(): int
+    {
+        return $this->db->table($this->table)
+            ->where('MONTH(tanggal_main)', date('n'))
+            ->where('YEAR(tanggal_main)', date('Y'))
+            ->where('status', 'success')
+            ->countAllResults();
+    }
+
     /**
      * 5 booking terbaru untuk widget dashboard.
      */
