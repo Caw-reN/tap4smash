@@ -69,20 +69,20 @@
 <!-- ── Stats Strip ──────────────────────────────────────────────── -->
 <div class="stats-strip">
     <div class="strip-stat">
-        <span class="num"><?= count($lapangans) ?>+</span>
-        <span class="lbl">Lapangan Tersedia</span>
+        <span class="num"><span class="counter" data-target="<?= count($lapangans) ?>">0</span></span>
+        <span class="lbl">Lapangan Premium</span>
     </div>
     <div class="strip-stat">
-        <span class="num">24/7</span>
-        <span class="lbl">Booking Online</span>
+        <span class="num">&lt; <span class="counter" data-target="1">0</span></span>
+        <span class="lbl">Menit Proses Booking</span>
     </div>
     <div class="strip-stat">
-        <span class="num">WA</span>
+        <span class="num"><span class="counter" data-target="100">0</span>%</span>
         <span class="lbl">Konfirmasi Otomatis</span>
     </div>
     <div class="strip-stat">
-        <span class="num">DP</span>
-        <span class="lbl">Bisa Bayar Setengah</span>
+        <span class="num"><span class="counter" data-target="50">0</span>%</span>
+        <span class="lbl">Bisa DP Dulu</span>
     </div>
 </div>
 
@@ -102,7 +102,14 @@
         <?php foreach ($lapangans as $idx => $l): ?>
         <div class="lapangan-card">
             <div class="lapangan-card-top">
+                <?php if (!empty($l['foto'])): ?>
+                <img src="<?= base_url('img/lapangans/' . esc($l['foto'])) ?>"
+                     alt="<?= esc($l['nama_lapangan']) ?>"
+                     style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.85;">
+                <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(10,21,48,.2), rgba(10,21,48,.6));"></div>
+                <?php else: ?>
                 <i class="fa-solid fa-table-tennis-paddle-ball court-icon"></i>
+                <?php endif; ?>
                 <span class="card-avail-badge"><i class="fa-solid fa-circle" style="font-size:.45rem;color:#4ade80;"></i> Tersedia</span>
             </div>
             <div class="lapangan-card-body">
@@ -186,18 +193,6 @@
     </div>
 </section>
 
-<!-- ── CTA ─────────────────────────────────────────────────────── -->
-<section style="padding:4rem 2rem;text-align:center;background:radial-gradient(ellipse 60% 60% at 50% 100%, rgba(204,255,0,.08) 0%, transparent 70%);">
-    <h2 style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.8rem;text-transform:uppercase;margin-bottom:1rem;">
-        Siap Untuk Bermain?
-    </h2>
-    <p style="color:var(--text-muted);margin-bottom:2rem;font-size:.92rem;">Amankan slot lapanganmu sekarang sebelum penuh!</p>
-    <a href="<?= site_url('booking') ?>" class="btn-primary" style="font-size:1rem;padding:1rem 2.5rem;">
-        <i class="fa-solid fa-calendar-plus"></i> Booking Sekarang
-    </a>
-</section>
-
-
 <!-- ── Lokasi Kami ──────────────────────────────────────── -->
 <section class="lokasi-section" id="lokasi">
     <div class="section" style="max-width:1100px;">
@@ -263,6 +258,17 @@
     </div>
 </section>
 
+<!-- ── CTA ─────────────────────────────────────────────────────── -->
+<section style="padding:4rem 2rem;text-align:center;background:radial-gradient(ellipse 60% 60% at 50% 100%, rgba(204,255,0,.08) 0%, transparent 70%);">
+    <h2 style="font-family:'Oswald',sans-serif;font-weight:700;font-size:1.8rem;text-transform:uppercase;margin-bottom:1rem;">
+        Siap Untuk Bermain?
+    </h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem;font-size:.92rem;">Amankan slot lapanganmu sekarang sebelum penuh!</p>
+    <a href="<?= site_url('booking') ?>" class="btn-primary" style="font-size:1rem;padding:1rem 2.5rem;">
+        <i class="fa-solid fa-calendar-plus"></i> Booking Sekarang
+    </a>
+</section>
+
 <!-- ── Footer ──────────────────────────────────────────── -->
 <footer class="footer">
     <p>
@@ -274,6 +280,48 @@
         <a href="<?= site_url('admin/login') ?>" style="color:rgba(255,255,255,.45);">Admin Panel</a>
     </p>
 </footer>
+
+<!-- ── Script Animasi Counter ─────────────────────────────────── -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const counters = document.querySelectorAll(".counter");
+    
+    const animate = (counter) => {
+        const target = +counter.getAttribute("data-target");
+        const duration = 2000; // Durasi animasi 2 detik
+        
+        let startTime = null;
+        const step = (timestamp) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            
+            // Efek Ease-out (melambat di akhir)
+            const easeProgress = progress * (2 - progress);
+            
+            counter.innerText = Math.floor(easeProgress * target);
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            } else {
+                counter.innerText = target;
+            }
+        };
+        window.requestAnimationFrame(step);
+    };
+
+    // Trigger animasi ketika elemen terlihat di layar
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                animate(entry.target);
+                obs.unobserve(entry.target); // Mainkan sekali saja
+            }
+        });
+    }, { threshold: 0.5 });
+
+    counters.forEach(counter => observer.observe(counter));
+});
+</script>
 
 </body>
 </html>

@@ -9,7 +9,7 @@ class LapanganModel extends Model
     protected $table         = 'lapangans';
     protected $primaryKey    = 'id';
     protected $useTimestamps = true;
-    protected $allowedFields = ['nama_lapangan', 'jenis_lapangan', 'harga_per_jam', 'is_active'];
+    protected $allowedFields = ['nama_lapangan', 'jenis_lapangan', 'foto', 'harga_per_jam', 'is_active'];
 
     // ─── Queries ──────────────────────────────────────────────────────────────
 

@@ -30,6 +30,7 @@
             <thead>
                 <tr>
                     <th>#</th>
+                    <th>Foto</th>
                     <th>Nama Lapangan</th>
                     <th>Jenis</th>
                     <th>Harga / Jam</th>
@@ -50,6 +51,17 @@
                 <?php foreach ($lapangans as $l): ?>
                 <tr>
                     <td style="color:var(--text-muted);"><?= $l['id'] ?></td>
+                    <td>
+                        <?php if (!empty($l['foto'])): ?>
+                        <img src="<?= base_url('img/lapangans/' . esc($l['foto'])) ?>"
+                             alt="<?= esc($l['nama_lapangan']) ?>"
+                             style="width:56px;height:40px;object-fit:cover;border-radius:4px;border:1px solid var(--border-dark);display:block;">
+                        <?php else: ?>
+                        <span style="display:flex;align-items:center;justify-content:center;width:56px;height:40px;border-radius:4px;border:1px dashed var(--border-dark);color:var(--text-muted);font-size:.7rem;">
+                            <i class="fa-solid fa-image"></i>
+                        </span>
+                        <?php endif; ?>
+                    </td>
                     <td><strong><?= esc($l['nama_lapangan']) ?></strong></td>
                     <td style="color:var(--text-muted);"><?= esc($l['jenis_lapangan'] ?? '-') ?: '-' ?></td>
                     <td>Rp <?= number_format($l['harga_per_jam'], 0, ',', '.') ?></td>
