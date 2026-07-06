@@ -214,12 +214,12 @@ function previewLogo(input) {
 
                     <div class="mode-labels mode-toggle-wrap">
                         <label for="mode-sandbox" class="mode-label" id="lbl-sandbox">
-                            <span class="mode-icon">🧪</span>
+                            <span class="mode-icon"><i class="fa-solid fa-flask"></i></span>
                             <span class="mode-name">Sandbox</span>
                             <span class="mode-desc">Untuk pengujian. Tidak ada transaksi nyata. Pembayaran disimulasikan.</span>
                         </label>
                         <label for="mode-production" class="mode-label" id="lbl-production">
-                            <span class="mode-icon">🚀</span>
+                            <span class="mode-icon"><i class="fa-solid fa-rocket"></i></span>
                             <span class="mode-name">Production</span>
                             <span class="mode-desc">Mode live. Pembayaran QRIS nyata. Pastikan API key sudah benar.</span>
                         </label>
