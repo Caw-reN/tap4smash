@@ -931,6 +931,7 @@ img { max-width: 100%; }
     max-width: 600px;
     margin: 0 auto;
     padding: 2rem;
+    min-height: calc(100vh - 160px);
 }
 
 .booking-card {
@@ -1041,6 +1042,7 @@ img { max-width: 100%; }
     max-width: 560px;
     margin: 0 auto;
     padding: 2rem;
+    min-height: calc(100vh - 160px);
 }
 
 .status-badge-large {
