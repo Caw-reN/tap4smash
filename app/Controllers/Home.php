@@ -27,7 +27,7 @@ class Home extends BaseController
     /** Landing Page (F-01) */
     public function index(): string
     {
-        $lapangans    = $this->lapanganModel->getActive();
+        $lapangans    = $this->lapanganModel->orderBy('nama_lapangan', 'ASC')->findAll();
         $settingModel = new \App\Models\SettingModel();
 
         return view('user/home', [

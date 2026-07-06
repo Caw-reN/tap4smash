@@ -100,7 +100,8 @@
     <?php else: ?>
     <div class="lapangan-grid">
         <?php foreach ($lapangans as $idx => $l): ?>
-        <div class="lapangan-card">
+        <?php $isMaint = empty($l['is_active']); ?>
+        <div class="lapangan-card <?= $isMaint ? 'maintenance' : '' ?>">
             <div class="lapangan-card-top">
                 <?php if (!empty($l['foto'])): ?>
                 <img src="<?= base_url('img/lapangans/' . esc($l['foto'])) ?>"
@@ -110,7 +111,11 @@
                 <?php else: ?>
                 <i class="fa-solid fa-table-tennis-paddle-ball court-icon"></i>
                 <?php endif; ?>
+                <?php if ($isMaint): ?>
+                <span class="card-avail-badge"><i class="fa-solid fa-wrench"></i> Maintenance</span>
+                <?php else: ?>
                 <span class="card-avail-badge"><i class="fa-solid fa-circle" style="font-size:.45rem;color:#4ade80;"></i> Tersedia</span>
+                <?php endif; ?>
             </div>
             <div class="lapangan-card-body">
                 <h3><?= esc($l['nama_lapangan']) ?></h3>
@@ -122,10 +127,16 @@
                     Rp <?= number_format($l['harga_per_jam'], 0, ',', '.') ?>
                     <span>/ jam</span>
                 </div>
+                <?php if ($isMaint): ?>
+                <button type="button" class="btn-book-card" tabindex="-1">
+                    <i class="fa-solid fa-wrench"></i> Sedang Perawatan
+                </button>
+                <?php else: ?>
                 <a href="<?= site_url('booking?lapangan_id=' . $l['id']) ?>" class="btn-book-card">
                     <i class="fa-solid fa-calendar-plus"></i> Booking Sekarang
                     <i class="fa-solid fa-arrow-right" style="margin-left:auto;font-size:.7rem;opacity:.6;"></i>
                 </a>
+                <?php endif; ?>
             </div>
         </div>
         <?php endforeach; ?>
