@@ -193,7 +193,7 @@ async function doPelunasanQris(bookingId, sisaFormatted, btn) {
         btn.disabled = false;
 
         if (!res.ok || !data.success) {
-            alert(data.message || 'Gagal membuat QRIS.');
+            await showAlert(data.message || 'Gagal membuat QRIS.', 'error');
             return;
         }
 
@@ -226,7 +226,7 @@ async function doPelunasanQris(bookingId, sisaFormatted, btn) {
     } catch (err) {
         btn.innerHTML = originalHtml;
         btn.disabled = false;
-        alert('Terjadi kesalahan jaringan.');
+        await showAlert('Terjadi kesalahan jaringan.', 'error');
     }
 }
 
@@ -260,7 +260,7 @@ async function pollQrisPelunasan(bookingId) {
         
         if (data.success && data.paid) {
             clearInterval(pollInterval);
-            alert(data.message);
+            await showAlert(data.message, 'success');
             window.location.reload();
         }
     } catch (err) {}

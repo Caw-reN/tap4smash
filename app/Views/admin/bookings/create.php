@@ -230,7 +230,7 @@ async function submitBooking(e) {
         const data = await res.json();
         
         if (!res.ok || !data.success) {
-            alert(data.message || 'Gagal menyimpan booking.');
+            await showAlert(data.message || 'Gagal menyimpan booking.', 'error');
             btn.innerHTML = originalText;
             btn.disabled = false;
             return;
@@ -259,7 +259,7 @@ async function submitBooking(e) {
         }
 
     } catch (err) {
-        alert('Terjadi kesalahan jaringan.');
+        await showAlert('Terjadi kesalahan jaringan.', 'error');
         btn.innerHTML = originalText;
         btn.disabled = false;
     }
@@ -292,16 +292,16 @@ async function pollQrisNewBooking(bookingId) {
         
         if (data.success && data.paid) {
             clearInterval(pollInterval);
-            alert('Pembayaran QRIS berhasil! Booking telah diselesaikan.');
+            await showAlert('Pembayaran QRIS berhasil! Booking telah diselesaikan.', 'success');
             window.location.href = '<?= site_url('admin/bookings') ?>';
         }
     } catch (err) {}
 }
 
-function cancelQris() {
+async function cancelQris() {
     document.getElementById('qris-modal').classList.remove('open');
     if (pollInterval) clearInterval(pollInterval);
-    alert('Pembayaran QRIS dibatalkan. Booking disimpan sebagai Pending (Belum Dibayar).');
+    await showAlert('Pembayaran QRIS dibatalkan. Booking disimpan sebagai Pending (Belum Dibayar).', 'info');
     window.location.href = '<?= site_url('admin/bookings') ?>';
 }
 </script>

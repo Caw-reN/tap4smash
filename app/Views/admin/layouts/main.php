@@ -125,7 +125,76 @@
 
 </div>
 
+<!-- Custom Alert Overlay -->
+<div class="ui-alert-overlay" id="uiAlertOverlay">
+    <div class="ui-alert-box" id="uiAlertBox">
+        <div class="ui-alert-icon-wrap" id="uiAlertIconWrap">
+            <i class="fa-solid fa-circle-check" id="uiAlertIcon"></i>
+        </div>
+        <h3 class="ui-alert-title" id="uiAlertTitle">Notifikasi</h3>
+        <p class="ui-alert-message" id="uiAlertMessage">Pesan disini</p>
+        <button type="button" class="btn btn-primary" onclick="closeUiAlert()" style="width: 100%; justify-content: center; font-size: 0.85rem; padding: 0.6rem;">OK</button>
+    </div>
+</div>
+
+<style>
+    .ui-alert-overlay { display: none; position: fixed; inset: 0; background: rgba(15,32,68,.55); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px); padding: 1rem; }
+    .ui-alert-overlay.open { display: flex; animation: fadeIn 0.2s ease-out; }
+    .ui-alert-box { background: var(--surface); border: 1px solid var(--border); padding: 2rem; max-width: 340px; width: 100%; border-radius: var(--radius); box-shadow: var(--shadow-lg); text-align: center; transform: scale(0.95); transition: transform 0.2s ease-out; }
+    .ui-alert-overlay.open .ui-alert-box { transform: scale(1); }
+    .ui-alert-icon-wrap { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; font-size: 1.75rem; }
+    .ui-alert-icon-wrap.success { background: var(--green-dim); color: var(--green); }
+    .ui-alert-icon-wrap.error { background: var(--red-dim); color: var(--red); }
+    .ui-alert-icon-wrap.warning { background: var(--yellow-dim); color: var(--yellow); }
+    .ui-alert-icon-wrap.info { background: var(--blue-dim); color: var(--blue); }
+    .ui-alert-title { font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--navy); }
+    .ui-alert-message { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.5; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+</style>
+
 <script>
+function showAlert(message, type = 'success', title = null) {
+    const overlay = document.getElementById('uiAlertOverlay');
+    const iconWrap = document.getElementById('uiAlertIconWrap');
+    const icon = document.getElementById('uiAlertIcon');
+    const titleEl = document.getElementById('uiAlertTitle');
+    const msgEl = document.getElementById('uiAlertMessage');
+
+    iconWrap.className = 'ui-alert-icon-wrap ' + type;
+    
+    let defaultTitle = 'Notifikasi';
+    if (type === 'success') {
+        icon.className = 'fa-solid fa-circle-check';
+        defaultTitle = 'Berhasil';
+    } else if (type === 'error') {
+        icon.className = 'fa-solid fa-circle-xmark';
+        defaultTitle = 'Gagal';
+    } else if (type === 'warning') {
+        icon.className = 'fa-solid fa-triangle-exclamation';
+        defaultTitle = 'Peringatan';
+    } else if (type === 'info') {
+        icon.className = 'fa-solid fa-circle-info';
+        defaultTitle = 'Informasi';
+    }
+
+    titleEl.textContent = title || defaultTitle;
+    msgEl.textContent = message;
+
+    overlay.classList.add('open');
+    
+    return new Promise((resolve) => {
+        window._uiAlertResolve = resolve;
+    });
+}
+
+function closeUiAlert() {
+    document.getElementById('uiAlertOverlay').classList.remove('open');
+    if (window._uiAlertResolve) {
+        window._uiAlertResolve();
+        window._uiAlertResolve = null;
+    }
+}
+
 function toggleSidebar() {
     const sidebar = document.querySelector('.sidebar');
     const overlay = document.getElementById('sidebarOverlay');
@@ -134,7 +203,6 @@ function toggleSidebar() {
         overlay.classList.toggle('open');
     }
 }
-// Tutup sidebar otomatis pas link dinavigasi di HP
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.sidebar-nav .nav-item').forEach(link => {
         link.addEventListener('click', () => {

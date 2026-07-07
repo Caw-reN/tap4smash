@@ -62,7 +62,7 @@ class BookingModel extends Model
      * Semua booking dengan join nama lapangan.
      * Mendukung filter: tanggal, lapangan_id, status.
      */
-    public function getAllWithFilters(array $filters = []): array
+    public function getAllWithFilters(array $filters = [], int $perPage = 15, int $offset = 0): array
     {
         $builder = $this->db->table('bookings b')
             ->select('b.*, l.nama_lapangan')
@@ -82,7 +82,31 @@ class BookingModel extends Model
             $builder->where('b.status_pelunasan', $filters['status_pelunasan']);
         }
 
-        return $builder->get()->getResultArray();
+        return $builder->limit($perPage, $offset)->get()->getResultArray();
+    }
+
+    /**
+     * Hitung total booking untuk pagination.
+     */
+    public function countWithFilters(array $filters = []): int
+    {
+        $builder = $this->db->table('bookings b')
+            ->join('lapangans l', 'l.id = b.lapangan_id');
+
+        if (! empty($filters['tanggal'])) {
+            $builder->where('b.tanggal_main', $filters['tanggal']);
+        }
+        if (! empty($filters['lapangan_id'])) {
+            $builder->where('b.lapangan_id', $filters['lapangan_id']);
+        }
+        if (! empty($filters['status'])) {
+            $builder->where('b.status', $filters['status']);
+        }
+        if (! empty($filters['status_pelunasan'])) {
+            $builder->where('b.status_pelunasan', $filters['status_pelunasan']);
+        }
+
+        return $builder->countAllResults();
     }
 
     /**
@@ -226,7 +250,7 @@ class BookingModel extends Model
     public function getRecentBookings(int $limit = 5): array
     {
         return $this->db->table('bookings b')
-            ->select('b.booking_code, b.nama_pemesan, b.tanggal_main, b.jam_main, b.status, b.skema_pembayaran, l.nama_lapangan')
+            ->select('b.booking_code, b.nama_pemesan, b.tanggal_main, b.jam_main, b.status, b.skema_pembayaran, b.jumlah_dibayar, b.status_pelunasan, l.nama_lapangan')
             ->join('lapangans l', 'l.id = b.lapangan_id')
             ->where('b.status', 'success')
             ->orderBy('b.created_at', 'DESC')

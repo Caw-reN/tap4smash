@@ -28,11 +28,21 @@ class BookingController extends BaseController
             'status_pelunasan' => $this->request->getGet('status_pelunasan'),
         ];
 
+        $perPage = 10;
+        $page    = max(1, (int) ($this->request->getGet('page') ?? 1));
+        $offset  = ($page - 1) * $perPage;
+        $total   = $this->bookingModel->countWithFilters($filters);
+        $totalPages = (int) ceil($total / $perPage);
+
         return view('admin/bookings/index', [
-            'page_title' => 'Manajemen Booking',
-            'bookings'   => $this->bookingModel->getAllWithFilters($filters),
-            'lapangans'  => $this->lapanganModel->findAll(),
-            'filters'    => $filters,
+            'page_title'  => 'Manajemen Booking',
+            'bookings'    => $this->bookingModel->getAllWithFilters($filters, $perPage, $offset),
+            'lapangans'   => $this->lapanganModel->findAll(),
+            'filters'     => $filters,
+            'total'       => $total,
+            'perPage'     => $perPage,
+            'currentPage' => $page,
+            'totalPages'  => $totalPages,
         ]);
     }
 

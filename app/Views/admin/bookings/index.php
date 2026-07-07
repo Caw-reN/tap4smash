@@ -64,7 +64,9 @@
             <span class="table-card-title">
                 <i class="fa-solid fa-clipboard-list"></i> Daftar Booking
             </span>
-            <span style="font-size:.75rem;color:var(--text-muted); margin-left:.5rem;"><?= count($bookings) ?> data</span>
+            <span style="font-size:.75rem;color:rgba(255,255,255,.5); margin-left:.5rem;">
+                <?= number_format($total) ?> total &bull; Hal. <?= $currentPage ?>/<?= max(1, $totalPages) ?>
+            </span>
         </div>
         <a href="<?= site_url('admin/bookings/create') ?>" class="btn btn-volt btn-sm" style="font-size:.8rem;">
             <i class="fa-solid fa-plus"></i> Tambah Booking
@@ -148,6 +150,67 @@
             </tbody>
         </table>
     </div>
+
+    <?php if ($totalPages > 1): ?>
+    <?php
+        // Build query string for pagination (preserve filters)
+        $qParams = array_filter([
+            'tanggal'          => $filters['tanggal'] ?? '',
+            'lapangan_id'      => $filters['lapangan_id'] ?? '',
+            'status'           => $filters['status'] ?? '',
+            'status_pelunasan' => $filters['status_pelunasan'] ?? '',
+        ]);
+        $queryBase = $qParams ? '&' . http_build_query($qParams) : '';
+    ?>
+    <div class="pagination-wrap">
+        <div class="pagination-info">
+            <?php
+                $from = ($currentPage - 1) * $perPage + 1;
+                $to   = min($currentPage * $perPage, $total);
+            ?>
+            Menampilkan <strong><?= $from ?>–<?= $to ?></strong> dari <strong><?= number_format($total) ?></strong> booking
+        </div>
+        <div class="pagination">
+            <?php if ($currentPage > 1): ?>
+            <a href="?page=<?= $currentPage - 1 ?><?= $queryBase ?>" class="page-btn" title="Sebelumnya">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <?php else: ?>
+            <span class="page-btn disabled"><i class="fa-solid fa-chevron-left"></i></span>
+            <?php endif; ?>
+
+            <?php
+                $range = 2;
+                $start = max(1, $currentPage - $range);
+                $end   = min($totalPages, $currentPage + $range);
+            ?>
+
+            <?php if ($start > 1): ?>
+                <a href="?page=1<?= $queryBase ?>" class="page-btn">1</a>
+                <?php if ($start > 2): ?><span class="page-ellipsis">…</span><?php endif; ?>
+            <?php endif; ?>
+
+            <?php for ($i = $start; $i <= $end; $i++): ?>
+            <a href="?page=<?= $i ?><?= $queryBase ?>" class="page-btn <?= $i === $currentPage ? 'active' : '' ?>">
+                <?= $i ?>
+            </a>
+            <?php endfor; ?>
+
+            <?php if ($end < $totalPages): ?>
+                <?php if ($end < $totalPages - 1): ?><span class="page-ellipsis">…</span><?php endif; ?>
+                <a href="?page=<?= $totalPages ?><?= $queryBase ?>" class="page-btn"><?= $totalPages ?></a>
+            <?php endif; ?>
+
+            <?php if ($currentPage < $totalPages): ?>
+            <a href="?page=<?= $currentPage + 1 ?><?= $queryBase ?>" class="page-btn" title="Berikutnya">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+            <?php else: ?>
+            <span class="page-btn disabled"><i class="fa-solid fa-chevron-right"></i></span>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <!-- Detail Modal -->
