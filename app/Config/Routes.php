@@ -42,7 +42,8 @@ $routes->group('admin', function ($routes) {
     $routes->get('bookings',   'Admin\BookingController::index');
     $routes->get('pelunasan',  'Admin\BookingController::pelunasan');
     $routes->post('pelunasan/lunasi/(:num)', 'Admin\BookingController::lunasi/$1');
-
+    $routes->post('pelunasan/qris-init',     'Admin\BookingController::pelunasanQrisInit');
+    $routes->post('pelunasan/qris-status',   'Admin\BookingController::pelunasanQrisStatus');
     // Check-in QR Scanner
     $routes->get( 'checkin',           'Admin\BookingController::checkin');
     $routes->post('checkin/scan',      'Admin\BookingController::scanResult');

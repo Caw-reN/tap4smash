@@ -60,6 +60,98 @@ class BookingController extends BaseController
             ->with('success', "Booking #{$booking['booking_code']} berhasil dilunasi.");
     }
 
+    /** API: Inisialisasi QRIS untuk Pelunasan */
+    public function pelunasanQrisInit(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $json      = $this->request->getJSON(true);
+        $bookingId = (int) ($json['booking_id'] ?? 0);
+
+        $booking = $this->bookingModel->find($bookingId);
+
+        if (! $booking || $booking['status'] !== 'success') {
+            return $this->response->setStatusCode(404)->setJSON([
+                'success' => false,
+                'message' => 'Booking tidak ditemukan.',
+            ]);
+        }
+
+        if ($booking['status_pelunasan'] === 'lunas') {
+            return $this->response->setStatusCode(422)->setJSON([
+                'success' => false,
+                'message' => 'Booking ini sudah dilunasi.',
+            ]);
+        }
+
+        $paymentKu   = new PaymentKu();
+        $sisaTagihan = (float) $booking['sisa_tagihan'];
+        $orderId     = $booking['booking_code'] . '-LNS';
+
+        $result = $paymentKu->createQrisTransaction(
+            $orderId,
+            $sisaTagihan,
+            $booking['nama_pemesan'],
+            $booking['nomor_wa'],
+            site_url('payment/callback')
+        );
+
+        if (! $result['success']) {
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false,
+                'message' => 'Gagal membuat QRIS: ' . ($result['error'] ?? 'Unknown error'),
+            ]);
+        }
+
+        $this->bookingModel->update($bookingId, [
+            'payment_token' => $result['token'],
+        ]);
+
+        return $this->response->setJSON([
+            'success'      => true,
+            'qr_url'       => $result['qr_url'],
+            'qr_string'    => $result['qr_string'],
+            'pay_url'      => $result['pay_url'],
+            'sisa_tagihan' => $sisaTagihan,
+        ]);
+    }
+
+    /** API: Polling status QRIS Pelunasan */
+    public function pelunasanQrisStatus(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $json      = $this->request->getJSON(true);
+        $bookingId = (int) ($json['booking_id'] ?? 0);
+        $booking   = $this->bookingModel->find($bookingId);
+
+        if (! $booking) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Booking tidak ditemukan.']);
+        }
+
+        if ($booking['status_pelunasan'] === 'lunas') {
+            return $this->response->setJSON([
+                'success' => true,
+                'paid'    => true,
+                'message' => 'Pembayaran QRIS terkonfirmasi. Booking sudah lunas!',
+            ]);
+        }
+
+        $paymentKu = new PaymentKu();
+        $checkId = ! empty($booking['payment_token'])
+            ? $booking['payment_token']
+            : $booking['booking_code'] . '-LNS';
+
+        $result = $paymentKu->checkStatus($checkId);
+
+        if ($result['status'] === 'success') {
+            $this->bookingModel->markAsLunas($bookingId);
+            return $this->response->setJSON([
+                'success' => true,
+                'paid'    => true,
+                'message' => 'Pembayaran QRIS terkonfirmasi. Booking sudah lunas!',
+            ]);
+        }
+
+        return $this->response->setJSON(['success' => true, 'paid' => false]);
+    }
+
     // ─── Check-in QR Scanner ──────────────────────────────────────────────────
 
     /**
