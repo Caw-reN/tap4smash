@@ -8,7 +8,8 @@
     </a>
 </div>
 
-<div class="card" style="max-width:800px; margin:0 auto; padding:2rem;">
+<div class="form-card" style="max-width:900px; margin:0 auto;">
+    <div class="form-body">
     <form id="createBookingForm" onsubmit="submitBooking(event)">
         <?= csrf_field() ?>
         
@@ -82,6 +83,7 @@
             </button>
         </div>
     </form>
+    </div>
 </div>
 
 <!-- Modal QRIS (diadopsi dari pelunasan) -->
