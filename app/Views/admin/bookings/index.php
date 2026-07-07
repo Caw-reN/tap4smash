@@ -117,11 +117,11 @@
                                     $badgeText = 'LUNAS';
                                 } else {
                                     $badgeClass = 'badge-dp';
-                                    $badgeText = 'SUDAH DP';
+                                    $badgeText = 'DP';
                                 }
                             } elseif ($b['status'] === 'pending') {
                                 $badgeClass = 'badge-pending';
-                                $badgeText = 'MENUNGGU BAYAR';
+                                $badgeText = 'BELUM BAYAR';
                             } elseif ($b['status'] === 'expired') {
                                 $badgeClass = 'badge-expired';
                                 $badgeText = 'EXPIRED';
