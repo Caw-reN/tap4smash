@@ -304,10 +304,6 @@ function cancelQris() {
 </script>
 
 <style>
-    .form-group label { display: block; font-weight:600; font-size:.85rem; color:var(--navy); margin-bottom:.35rem; }
-    .form-control { width: 100%; padding: .65rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: .9rem; }
-    .form-control:focus { border-color: var(--accent); outline: none; }
-    
     @media (max-width: 768px) {
         form > div { grid-template-columns: 1fr !important; }
     }
