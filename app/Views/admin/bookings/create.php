@@ -165,31 +165,41 @@ async function fetchSlots() {
 
     try {
         const res = await fetch(`<?= site_url('api/slots') ?>?lapangan_id=${lapId}&tanggal=${tgl}`);
+        if (!res.ok) throw new Error('Network response was not ok');
         const data = await res.json();
         
-        if (!data.success) {
-            container.innerHTML = `<span style="color:red; font-size:.85rem; grid-column:span 3;">Gagal memuat jadwal.</span>`;
+        if (!data.slots || !Array.isArray(data.slots)) {
+            container.innerHTML = `<span style="color:red; font-size:.85rem; grid-column:span 3;">Gagal memuat jadwal dari server.</span>`;
             return;
         }
 
+        const usedSlots = data.slots;
         container.innerHTML = '';
-        if (data.slots.length === 0) {
-            container.innerHTML = '<span style="color:var(--text-muted); font-size:.85rem; grid-column:span 3;">Tidak ada slot tersedia.</span>';
-            return;
-        }
 
-        data.slots.forEach(slot => {
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        const currentHour = today.getHours();
+        
+        for (let jam = 6; jam <= 23; jam++) {
+            const labelStr = jam.toString().padStart(2, '0') + ':00';
+            let isAvailable = !usedSlots.includes(jam);
+
+            // Jika tanggal sama dengan hari ini, disable jam yang sudah lewat
+            if (tgl === todayStr && jam <= currentHour) {
+                isAvailable = false;
+            }
+
             const label = document.createElement('label');
-            label.className = slot.available ? 'slot-card' : 'slot-card disabled';
+            label.className = isAvailable ? 'slot-card' : 'slot-card disabled';
 
-            if (slot.available) {
-                label.innerHTML = `<input type="checkbox" name="jam_main[]" value="${slot.jam}"> <span>${slot.label}</span>`;
+            if (isAvailable) {
+                label.innerHTML = `<input type="checkbox" name="jam_main[]" value="${jam}"> <span>${labelStr}</span>`;
             } else {
-                label.innerHTML = `<input type="checkbox" disabled> <span>${slot.label}</span>`;
+                label.innerHTML = `<input type="checkbox" disabled> <span>${labelStr}</span>`;
             }
 
             container.appendChild(label);
-        });
+        }
 
     } catch (err) {
         container.innerHTML = `<span style="color:red; font-size:.85rem; grid-column:span 3;">Kesalahan jaringan.</span>`;
