@@ -40,6 +40,9 @@ $routes->group('admin', function ($routes) {
 
     // Booking Management
     $routes->get('bookings',   'Admin\BookingController::index');
+    $routes->get('bookings/create',        'Admin\BookingController::create');
+    $routes->post('bookings/store',        'Admin\BookingController::store');
+    $routes->post('bookings/qris-new-status', 'Admin\BookingController::qrisNewBookingStatus');
     $routes->get('pelunasan',  'Admin\BookingController::pelunasan');
     $routes->post('pelunasan/lunasi/(:num)', 'Admin\BookingController::lunasi/$1');
     $routes->post('pelunasan/qris-init',     'Admin\BookingController::pelunasanQrisInit');

@@ -59,11 +59,16 @@
 
 <!-- Table -->
 <div class="table-card">
-    <div class="table-card-header">
-        <span class="table-card-title">
-            <i class="fa-solid fa-clipboard-list"></i> Daftar Booking
-        </span>
-        <span style="font-size:.75rem;color:var(--text-muted);"><?= count($bookings) ?> data</span>
+    <div class="table-card-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <span class="table-card-title">
+                <i class="fa-solid fa-clipboard-list"></i> Daftar Booking
+            </span>
+            <span style="font-size:.75rem;color:var(--text-muted); margin-left:.5rem;"><?= count($bookings) ?> data</span>
+        </div>
+        <a href="<?= site_url('admin/bookings/create') ?>" class="btn btn-green btn-sm" style="font-size:.8rem;">
+            <i class="fa-solid fa-plus"></i> Tambah Booking
+        </a>
     </div>
     <div class="table-wrap">
         <table class="admin-table">

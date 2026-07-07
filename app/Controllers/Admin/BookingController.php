@@ -36,6 +36,208 @@ class BookingController extends BaseController
         ]);
     }
 
+    public function create(): string
+    {
+        return view('admin/bookings/create', [
+            'page_title' => 'Tambah Booking Baru',
+            'lapangans'  => $this->lapanganModel->getActive(),
+        ]);
+    }
+
+    public function store(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        helper(['text', 'whatsapp']);
+
+        $rules = [
+            'lapangan_id'  => 'required|is_natural_no_zero',
+            'tanggal_main' => 'required|valid_date[Y-m-d]',
+            'jam_main'     => 'required',
+            'nama_pemesan' => 'required',
+            'nomor_wa'     => 'required',
+            'pembayaran'   => 'required|in_list[belum_bayar,dp,lunas]',
+            'metode'       => 'permit_empty|in_list[cash,qris]',
+        ];
+
+        if (! $this->validate($rules)) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'success' => false,
+                'message' => 'Input tidak valid. Periksa kembali form.',
+                'errors'  => $this->validator->getErrors()
+            ]);
+        }
+
+        $lapanganId  = (int) $this->request->getPost('lapangan_id');
+        $tanggalMain = $this->request->getPost('tanggal_main');
+        $jamMain     = $this->request->getPost('jam_main');
+        if (!is_array($jamMain)) $jamMain = [$jamMain];
+        $namaPemesan = $this->request->getPost('nama_pemesan');
+        $nomorWa     = whatsapp_normalize_number($this->request->getPost('nomor_wa'));
+        $pembayaran  = $this->request->getPost('pembayaran');
+        $metode      = $this->request->getPost('metode') ?? 'cash';
+
+        $lapangan = $this->lapanganModel->find($lapanganId);
+        if (! $lapangan) {
+            return $this->response->setStatusCode(404)->setJSON(['success' => false, 'message' => 'Lapangan tidak ditemukan.']);
+        }
+
+        if (count($jamMain) < 1) {
+            return $this->response->setStatusCode(400)->setJSON(['success' => false, 'message' => 'Pilih minimal 1 slot jam.']);
+        }
+
+        $durasiJam = count($jamMain);
+        $totalHarga = $lapangan['harga_per_jam'] * $durasiJam;
+
+        $db = db_connect();
+        $db->transStart();
+
+        try {
+            $existingRows = $db->table('bookings')
+                ->select('jam_main')
+                ->where('lapangan_id', $lapanganId)
+                ->where('tanggal_main', $tanggalMain)
+                ->whereIn('status', ['pending', 'success'])
+                ->where('expires_at >', date('Y-m-d H:i:s'))
+                ->get()->getResultArray();
+                
+            $bookedSlots = [];
+            foreach($existingRows as $row) {
+                $rowSlots = explode(',', $row['jam_main']);
+                foreach($rowSlots as $rs) {
+                    $bookedSlots[] = (int)trim($rs);
+                }
+            }
+            
+            $intersect = array_intersect($jamMain, $bookedSlots);
+            if (!empty($intersect)) {
+                $db->transRollback();
+                return $this->response->setStatusCode(422)->setJSON(['success' => false, 'message' => 'Slot waktu sudah dipesan orang lain.']);
+            }
+
+            $skema = ($pembayaran === 'dp') ? 'dp' : 'full';
+            $dibayarSaatIni = 0;
+            if ($pembayaran === 'dp') $dibayarSaatIni = $totalHarga / 2;
+            if ($pembayaran === 'lunas') $dibayarSaatIni = $totalHarga;
+
+            $bookingCode = 'T4S-' . strtoupper(random_string('alnum', 8));
+            sort($jamMain);
+            $jamMainSorted = implode(',', $jamMain);
+
+            if ($metode === 'qris' && $pembayaran !== 'belum_bayar') {
+                $expiresAt = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+                
+                $paymentKu = new PaymentKu();
+                $result = $paymentKu->createQrisTransaction(
+                    $bookingCode,
+                    $dibayarSaatIni,
+                    $namaPemesan,
+                    $nomorWa,
+                    site_url('payment/callback')
+                );
+
+                if (! $result['success']) {
+                    $db->transRollback();
+                    return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Gagal membuat QRIS.']);
+                }
+
+                $bookingId = $this->bookingModel->insert([
+                    'booking_code'     => $bookingCode,
+                    'lapangan_id'      => $lapanganId,
+                    'nama_pemesan'     => $namaPemesan,
+                    'nomor_wa'         => $nomorWa,
+                    'tanggal_main'     => $tanggalMain,
+                    'jam_main'         => $jamMainSorted,
+                    'total_harga'      => $totalHarga,
+                    'skema_pembayaran' => $skema,
+                    'jumlah_dibayar'   => 0,
+                    'sisa_tagihan'     => $totalHarga,
+                    'status'           => 'pending',
+                    'status_pelunasan' => 'belum_lunas',
+                    'payment_token'    => $result['token'],
+                    'expires_at'       => $expiresAt,
+                ]);
+                $db->transComplete();
+
+                return $this->response->setJSON([
+                    'success'    => true,
+                    'is_qris'    => true,
+                    'qr_url'     => $result['qr_url'],
+                    'qr_string'  => $result['qr_string'],
+                    'booking_id' => $bookingId,
+                    'amount'     => $dibayarSaatIni,
+                    'message'    => 'Silakan scan QR untuk menyelesaikan pembayaran.',
+                ]);
+            } else {
+                $sisaTagihan = $totalHarga - $dibayarSaatIni;
+                $statusPelunasan = ($sisaTagihan <= 0) ? 'lunas' : 'belum_lunas';
+                $expiresAt = date('Y-m-d H:i:s', strtotime('+1 years'));
+
+                $this->bookingModel->insert([
+                    'booking_code'     => $bookingCode,
+                    'lapangan_id'      => $lapanganId,
+                    'nama_pemesan'     => $namaPemesan,
+                    'nomor_wa'         => $nomorWa,
+                    'tanggal_main'     => $tanggalMain,
+                    'jam_main'         => $jamMainSorted,
+                    'total_harga'      => $totalHarga,
+                    'skema_pembayaran' => $skema,
+                    'jumlah_dibayar'   => $dibayarSaatIni,
+                    'sisa_tagihan'     => $sisaTagihan,
+                    'status'           => 'success',
+                    'status_pelunasan' => $statusPelunasan,
+                    'expires_at'       => $expiresAt,
+                ]);
+                $db->transComplete();
+
+                session()->setFlashdata('success', 'Booking berhasil ditambahkan.');
+                return $this->response->setJSON([
+                    'success' => true,
+                    'is_qris' => false,
+                    'message' => 'Booking berhasil disimpan.'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return $this->response->setStatusCode(500)->setJSON(['success' => false, 'message' => 'Terjadi kesalahan sistem.']);
+        }
+    }
+
+    public function qrisNewBookingStatus(): \CodeIgniter\HTTP\ResponseInterface
+    {
+        $json      = $this->request->getJSON(true);
+        $bookingId = (int) ($json['booking_id'] ?? 0);
+        $booking   = $this->bookingModel->find($bookingId);
+
+        if (! $booking) return $this->response->setJSON(['success' => false]);
+        if ($booking['status'] === 'success') {
+            session()->setFlashdata('success', 'Pembayaran QRIS berhasil dikonfirmasi. Booking ditambahkan.');
+            return $this->response->setJSON(['success' => true, 'paid' => true]);
+        }
+
+        $paymentKu = new \App\Libraries\PaymentKu();
+        $checkId = !empty($booking['payment_token']) ? $booking['payment_token'] : $booking['booking_code'];
+        $result = $paymentKu->checkStatus($checkId);
+
+        if ($result['status'] === 'success') {
+            if ($booking['status'] !== 'success') {
+                $skema = $booking['skema_pembayaran'];
+                $dibayar = ($skema === 'dp') ? ($booking['total_harga'] / 2) : $booking['total_harga'];
+                $sisa = $booking['total_harga'] - $dibayar;
+                $pelunasan = ($sisa <= 0) ? 'lunas' : 'belum_lunas';
+                
+                $this->bookingModel->update($bookingId, [
+                    'status' => 'success',
+                    'jumlah_dibayar' => $dibayar,
+                    'sisa_tagihan' => $sisa,
+                    'status_pelunasan' => $pelunasan,
+                ]);
+            }
+            session()->setFlashdata('success', 'Pembayaran QRIS berhasil dikonfirmasi. Booking ditambahkan.');
+            return $this->response->setJSON(['success' => true, 'paid' => true, 'message' => 'Pembayaran QRIS berhasil!']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'paid' => false]);
+    }
+
     /** Daftar booking yang perlu dilunasi (DP belum lunas) */
     public function pelunasan(): string
     {
