@@ -104,8 +104,12 @@ class BookingModel extends Model
      */
     public function markAsLunas(int $id): bool
     {
+        $booking = $this->find($id);
+        if (!$booking) return false;
+
         return (bool) $this->update($id, [
             'sisa_tagihan'     => 0,
+            'jumlah_dibayar'   => $booking['total_harga'],
             'status_pelunasan' => 'lunas',
         ]);
     }
@@ -125,9 +129,13 @@ class BookingModel extends Model
         ];
 
         if ($method !== null) {
-            $data['checkin_method']   = $method;
-            $data['sisa_tagihan']     = 0;
-            $data['status_pelunasan'] = 'lunas';
+            $booking = $this->find($id);
+            if ($booking) {
+                $data['checkin_method']   = $method;
+                $data['sisa_tagihan']     = 0;
+                $data['jumlah_dibayar']   = $booking['total_harga'];
+                $data['status_pelunasan'] = 'lunas';
+            }
         }
 
         return (bool) $this->update($id, $data);
