@@ -66,7 +66,7 @@
             </span>
             <span style="font-size:.75rem;color:var(--text-muted); margin-left:.5rem;"><?= count($bookings) ?> data</span>
         </div>
-        <a href="<?= site_url('admin/bookings/create') ?>" class="btn btn-green btn-sm" style="font-size:.8rem;">
+        <a href="<?= site_url('admin/bookings/create') ?>" class="btn btn-volt btn-sm" style="font-size:.8rem;">
             <i class="fa-solid fa-plus"></i> Tambah Booking
         </a>
     </div>

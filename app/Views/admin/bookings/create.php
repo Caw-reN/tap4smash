@@ -77,7 +77,7 @@
         </div>
         
         <div style="margin-top:2rem; text-align:right;">
-            <button type="submit" class="btn btn-green" id="btnSubmit">
+            <button type="submit" class="btn btn-volt" id="btnSubmit">
                 <i class="fa-solid fa-save"></i> Simpan Booking
             </button>
         </div>
