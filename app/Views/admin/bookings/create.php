@@ -178,21 +178,12 @@ async function fetchSlots() {
 
         data.slots.forEach(slot => {
             const label = document.createElement('label');
-            label.style.display = 'flex';
-            label.style.alignItems = 'center';
-            label.style.gap = '.5rem';
-            label.style.fontSize = '.9rem';
-            label.style.padding = '.5rem';
-            label.style.border = '1px solid var(--border)';
-            label.style.borderRadius = 'var(--radius-sm)';
-            label.style.cursor = slot.available ? 'pointer' : 'not-allowed';
-            label.style.background = slot.available ? 'transparent' : 'var(--surface2)';
-            label.style.color = slot.available ? 'var(--text)' : 'var(--text-muted)';
+            label.className = slot.available ? 'slot-card' : 'slot-card disabled';
 
             if (slot.available) {
-                label.innerHTML = `<input type="checkbox" name="jam_main[]" value="${slot.jam}"> ${slot.label}`;
+                label.innerHTML = `<input type="checkbox" name="jam_main[]" value="${slot.jam}"> <span>${slot.label}</span>`;
             } else {
-                label.innerHTML = `<input type="checkbox" disabled> <span style="text-decoration:line-through;">${slot.label}</span>`;
+                label.innerHTML = `<input type="checkbox" disabled> <span>${slot.label}</span>`;
             }
 
             container.appendChild(label);
@@ -304,6 +295,55 @@ function cancelQris() {
 </script>
 
 <style>
+    /* Form Focus Styles to match UI */
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        border-color: var(--volt) !important;
+        box-shadow: 0 0 0 3px rgba(170,238,0,.2) !important;
+    }
+    
+    /* Slot Card styling */
+    .slot-card {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: .65rem;
+        cursor: pointer;
+        transition: all .2s;
+        font-family: 'Oswald', sans-serif;
+        font-size: .95rem;
+        user-select: none;
+        background: var(--surface2);
+        color: var(--text);
+    }
+    .slot-card:hover {
+        border-color: var(--volt-border);
+        background: var(--volt-dim);
+    }
+    .slot-card input[type="checkbox"] {
+        display: none; /* Sembunyikan checkbox bawaan */
+    }
+    .slot-card:has(input:checked) {
+        background: var(--volt);
+        border-color: var(--volt);
+        color: #000;
+        box-shadow: 0 0 15px rgba(170,238,0,.25);
+    }
+    .slot-card.disabled {
+        opacity: .5;
+        cursor: not-allowed;
+        background: rgba(0,0,0,.1);
+        text-decoration: line-through;
+        color: var(--text-muted);
+    }
+    .slot-card.disabled:hover {
+        border-color: var(--border);
+        background: rgba(0,0,0,.1);
+    }
+
     @media (max-width: 768px) {
         form > div { grid-template-columns: 1fr !important; }
     }
