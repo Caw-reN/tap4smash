@@ -115,6 +115,9 @@
                                 if ($b['status_pelunasan'] === 'lunas') {
                                     $badgeClass = 'badge-success';
                                     $badgeText = 'LUNAS';
+                                } elseif ($b['jumlah_dibayar'] == 0) {
+                                    $badgeClass = 'badge-pending';
+                                    $badgeText = 'BELUM BAYAR';
                                 } else {
                                     $badgeClass = 'badge-dp';
                                     $badgeText = 'DP';

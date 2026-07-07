@@ -149,8 +149,22 @@
                     <td><?= date('d M Y', strtotime($b['tanggal_main'])) ?></td>
                     <td><?= format_jam_main($b['jam_main']) ?></td>
                     <td>
-                        <span class="badge <?= $b['skema_pembayaran'] === 'dp' ? 'badge-dp' : 'badge-full' ?>">
-                            <?= $b['skema_pembayaran'] === 'dp' ? 'DP 50%' : 'Lunas' ?>
+                        <?php
+                            $d_badgeClass = '';
+                            $d_badgeText = '';
+                            if ($b['jumlah_dibayar'] == 0) {
+                                $d_badgeClass = 'badge-pending';
+                                $d_badgeText = 'Belum Bayar';
+                            } elseif ($b['status_pelunasan'] === 'lunas') {
+                                $d_badgeClass = 'badge-full';
+                                $d_badgeText = 'Lunas';
+                            } else {
+                                $d_badgeClass = 'badge-dp';
+                                $d_badgeText = 'DP';
+                            }
+                        ?>
+                        <span class="badge <?= $d_badgeClass ?>">
+                            <?= $d_badgeText ?>
                         </span>
                     </td>
                     <td><span class="badge badge-success">Sukses</span></td>
