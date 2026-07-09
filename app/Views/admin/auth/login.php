@@ -35,11 +35,6 @@
             min-height: 100vh;
             font-family: 'Inter', sans-serif;
             background: var(--bg);
-            /* Subtle grid background seperti hero frontend */
-            background-image:
-                linear-gradient(var(--border) 1px, transparent 1px),
-                linear-gradient(90deg, var(--border) 1px, transparent 1px);
-            background-size: 40px 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -248,11 +243,24 @@
 <div class="login-wrap">
 
     <div class="brand">
-        <div class="brand-icon">
-            <i class="fa-solid fa-table-tennis-paddle-ball"></i>
-        </div>
-        <h1>Tap4<span>Smash</span></h1>
-        <p>Admin Dashboard</p>
+        <?php
+            $logoExts  = ['png', 'jpg', 'jpeg', 'webp'];
+            $loginLogo = null;
+            foreach ($logoExts as $ext) {
+                if (file_exists(FCPATH . 'img/logo.' . $ext)) {
+                    $loginLogo = base_url('img/logo.' . $ext) . '?v=' . filemtime(FCPATH . 'img/logo.' . $ext);
+                    break;
+                }
+            }
+        ?>
+        <?php if ($loginLogo): ?>
+            <img src="<?= $loginLogo ?>" alt="Logo" style="height:56px;width:auto;max-width:200px;object-fit:contain;margin-bottom:.75rem;">
+        <?php else: ?>
+            <div class="brand-icon">
+                <i class="fa-solid fa-table-tennis-paddle-ball"></i>
+            </div>
+            <h1>Tap4<span>Smash</span></h1>
+        <?php endif; ?>
     </div>
 
     <div class="login-card">
@@ -299,8 +307,6 @@
         </div>
 
         <div class="login-footer">
-            <a href="<?= site_url('/') ?>"><i class="fa-solid fa-arrow-left"></i> Kembali ke halaman publik</a>
-            &nbsp;&mdash;&nbsp;
             Tap4Smash &copy; <?= date('Y') ?>
         </div>
     </div>
